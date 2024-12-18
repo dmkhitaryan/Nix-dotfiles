@@ -13,7 +13,7 @@
     let 
       lib = nixpkgs.lib;
       system = "x86_64_linux";
-      pkgs = import nixpkgs {inherit system};
+      pkgs = import nixpkgs {inherit system; };
     in {
       homeConfigurations = {
         necoarc = home-manager.lib.homeManagerConfiguration {
