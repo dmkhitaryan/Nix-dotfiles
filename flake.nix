@@ -1,24 +1,29 @@
 {
-  description = "The initial Home-Manager setup";
+  description = "Home Manager configuration of necoarc";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-unstable";
+    # Specify the source of Home Manager and Nixpkgs.
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.11";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  
+
   outputs = { nixpkgs, home-manager, ... }:
-    let 
-      lib = nixpkgs.lib;
+    let
       system = "x86_64-linux";
-      pkgs = import nixpkgs {inherit system; };
+      pkgs = import nixpkgs { inherit system;};
     in {
       homeConfigurations = {
         necoarc = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          modules = [./home.nix];
+        # Specify your home configuration modules here, for example,
+        # the path to your home.nix.
+         inherit pkgs;
+         modules = [ ./home.nix ];
+
+        # Optionally use extraSpecialArgs
+        # to pass through arguments to home.nix
         };
       };
     };
