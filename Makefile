@@ -1,7 +1,11 @@
-.PHONY: update
-update:
-	home-manager switch --flake .#necoarc
+.PHONY: update-home
+update-home:
+	home-manager switch --flake /home/necoarc/dotfiles#necoarc
 
-.PHONY: update
+.PHONY: update-os
+update-os:
+	sudo nixos-rebuild switch --flake /home/necoarc/dotfiles/nixos
+
+.PHONY: clean
 clean:
 	sudo nix-collect-garbage -d
