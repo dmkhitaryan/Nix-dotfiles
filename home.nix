@@ -1,11 +1,16 @@
 { config, pkgs, ... }:
 
+let 
+  kittyConfig = import ./kitty.nix { inherit pkgs; };
+in
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
+
   home.username = "necoarc";
   home.homeDirectory = "/home/necoarc";
-
+  
+  imports = [ kittyConfig ];
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
   # introduces backwards incompatible changes.
@@ -19,9 +24,13 @@
   # environment.
   home.packages = with pkgs; [
     btop
+    gh
     gparted
+    kitty
+    rofi
     telegram-desktop
     thunderbird
+    vscode
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
     # pkgs.hello
@@ -39,13 +48,27 @@
     #   echo "Hello, ${config.home.username}!"
     # '')
   ];
+  gtk = {
+    enable = true;
+    iconTheme = {
+      name = "Qogir-dark";
+      package = pkgs.qogir-icon-theme; 
+    };
+    
+    cursorTheme = {
+      name = "BreezeX-RosePine-Linux";
+      package = pkgs.rose-pine-cursor;
+      size = 48;
+    };
+  };
+
   home.pointerCursor = {
     x11.enable = true;
-    gtk.enable = true;
     name = "BreezeX-RosePine-Linux";
     package = pkgs.rose-pine-cursor;
     size = 48;
   };
+      
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
   home.file = {

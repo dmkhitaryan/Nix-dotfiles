@@ -1,6 +1,5 @@
 { config, lib, pkgs, ... }:
 {
-
   # Enable OpenGL
   hardware.graphics = {
     enable = true;
@@ -8,6 +7,7 @@
 
   # Load nvidia driver for Xorg and Wayland
   services.xserver.videoDrivers = ["nvidia"];
+  boot.initrd.kernelModules = [ "amdgpu" ];
 
   environment.variables = {
     GBM_BACKEND = "nvidia-drm";
@@ -46,7 +46,7 @@
     open = lib.mkDefault false;
 
     prime = {
-        # amdgpuBusId = "PCI:5:0:0";
+        amdgpuBusId = "PCI:5:0:0";
         nvidiaBusId = "PCI:1:0:0";
       };
 
@@ -60,4 +60,5 @@
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
+  hardware.amdgpu.opencl.enable = lib.mkDefault false;
 }  

@@ -8,7 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      #./nvidia.nix
+      ./nvidia.nix
     ];
   
   boot.kernelPackages = pkgs.linuxPackages_latest;
@@ -153,20 +153,10 @@
     xorg.xev
   ];
 
-  fonts = {
-    packages = with pkgs; [
-      font-awesome
-      iosevka
-      sarasa-gothic
-    ];
-    fontconfig = {
-      defaultFonts = {
-        serif = ["Iosevka Extended" "Sarasa Gothic"];
-        sansSerif = ["Iosevka Extended" "Sarasa Gothic"];
-        monospace = ["Iosevka Extended" "Sarasa Mono"];
-      };
-    };
-  };
+  fonts.packages = with pkgs; [
+    iosevka
+    font-awesome
+  ];
 
   # Install and set the default editor to Neovim.
   programs.neovim = {
