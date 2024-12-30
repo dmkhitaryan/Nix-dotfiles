@@ -7,8 +7,7 @@
 
   # Load nvidia driver for Xorg and Wayland
   services.xserver.videoDrivers = ["nvidia"];
-  boot.initrd.kernelModules = [ "amdgpu" ];
-
+  
   environment.variables = {
     GBM_BACKEND = "nvidia-drm";
     LIBVA_DRIVER_NAME = "nvidia";
@@ -46,7 +45,7 @@
     open = lib.mkDefault false;
 
     prime = {
-        amdgpuBusId = "PCI:5:0:0";
+        #amdgpuBusId = "PCI:5:0:0";
         nvidiaBusId = "PCI:1:0:0";
       };
 
@@ -58,7 +57,7 @@
     nvidiaSettings = true;
 
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.production;
   };
   hardware.amdgpu.opencl.enable = lib.mkDefault false;
 }  

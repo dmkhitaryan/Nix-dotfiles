@@ -8,22 +8,23 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      #./nvidia.nix
+      ./nvidia.nix
+      ./prism.nix
     ];
   
   boot.kernelPackages = pkgs.linuxPackages_latest;
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  
+  environment.pathsToLink = [ "/libexec" ];
 
   # Disable Fn Lock on boot (for external KB).
-   boot.extraModprobeConfig = "
-     options. hid_apple fnmode = 0
-   ";
+  boot.extraModprobeConfig = "options hid_apple fnmode = 0";
   
   # Bluetooth turn-on.
   hardware.bluetooth.enable = true;
-  hardware.bluetooth.powerOnBoot = true;
+  hardware.bluetooth.powerOnBoot = false;
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -40,6 +41,11 @@
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
+  i18n.supportedLocales = [
+    "en_US.UTF-8/UTF-8"
+    "ja_JP.UTF-8/UTF-8"
+    "nl_NL.UTF-8/UTF-8"  
+];
 
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "nl_NL.UTF-8";
@@ -52,36 +58,34 @@
     LC_TELEPHONE = "nl_NL.UTF-8";
     LC_TIME = "nl_NL.UTF-8";
   };
-
- # Remove unnecessary XFCE packages:
-  environment.xfce.excludePackages = with pkgs.xfce; [
-    mousepad
-    xfce4-appfinder
-    xfce4-screenshooter
-    xfce4-terminal
-    parole
-  ];
   
-  # Enable the X11 windowing system.
-    services.xserver = {
-     enable = true;
-     dpi = 150;
-     desktopManager = {
-       xterm.enable = false;
-       xfce = {
-         enable = true;
-         noDesktop = true;
-         enableXfwm = false;
-        };
-     };
+ # Enable the X11 windowing system.
+  services.xserver = {
+    enable = true;
+    dpi = 150;
+    desktopManager = {
+      xterm.enable = false;
+    };
+    windowManager.i3 = {
+      enable = true;
+      extraPackages = with pkgs; [
+        dmenu
+        i3status
+        i3lock
+      ]; 
+    };
+  };
+  services.displayManager = {
+    defaultSession = "none+i3";
+  };
+  programs.dconf.enable = true;
 
-     windowManager.i3.package = pkgs.i3-rounded;
-     windowManager.i3.enable = true;
-   };
-  # Enable the XFCE Desktop Environment.
- services.xserver.displayManager.lightdm.enable = true;
- services.displayManager.defaultSession = "xfce+i3";
-   
+  # programs.hyprland = {
+  #   enable = true;
+  #   withUWSM = true; # recommended for most users
+  #   xwayland.enable = true; # Xwayland can be disabled.
+  # };
+
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us, ru";
@@ -120,36 +124,34 @@
     ];
   };
 
-  # (Un)install firefox.
-  programs.firefox.enable = false;
-
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
-
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   nix.settings.experimental-features = ["nix-command" "flakes"];
   environment.systemPackages = with pkgs; [
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    wget
     btrfs-assistant
     blueman
-    git
+    brightnessctl
     flameshot
     floorp
-    feh
     flatpak
     file-roller
-    google-chrome
-    lutris
+    git
     gnumake
-    pyenv
-    tint2
+    lutris
+    lxappearance
+    nitrogen
+    pamixer
+    playerctl
+    snixembed
     vesktop
     vlc
-    rofi
-    winePackages.staging
+    wget
+    winetricks
+    wineWowPackages.stable
     xorg.xev
   ];
 
@@ -193,10 +195,19 @@
   # Set up xdg-portals for Flatpak:
   xdg.portal = {
     enable = true;
+    xdgOpenUsePortal = true;
     extraPortals = with pkgs; [
       xdg-desktop-portal-gtk
+      xdg-desktop-portal-xapp
     ];
-    xdgOpenUsePortal = true;
+    config = {
+      common = {
+        x-cinnamon = [
+          "gtk"
+          "xapp"
+        ];
+      };
+    };
   };
 
   # List services that you want to enable:
@@ -213,6 +224,9 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
+  # Enable SysRq.
+  boot.kernel.sysctl."kernel.sysrq" = 1; 
+ 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
@@ -221,11 +235,23 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.11"; # Did you read the comment?
 
-  # Get Cachix so that I don't have to manually build the launcher oopsie! :D
-#  nix.settings = {
-#    substituters = [ "https://ezkea.cachix.org" ];
-#    trusted-public-keys = [ "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI=" ];
-#  };
-
+  services.picom = {
+    enable = true;
+    fade = true;
+    vSync = false;
+#    shadow = true;
+    fadeDelta = 4 ;
+    inactiveOpacity = 0.8;
+    activeOpacity = 1;
+    backend = "glx";
+    settings = {
+      blur = {
+	#method = "dual_kawase";
+#	background = true;
+	strength = 5;
+      };
+      corner-radius = 10;
+    };
+  };
 }
 

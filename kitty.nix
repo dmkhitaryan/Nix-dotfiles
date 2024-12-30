@@ -4,8 +4,8 @@
   programs.kitty = {
     enable = true;
     font = {
-      name = "Iosevka Term Medium Extended";
-      size = 12;
+      name = "Iosevka Extended";
+      size = 18;
     };
     settings = {
       #: The basic colors

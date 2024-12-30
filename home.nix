@@ -24,13 +24,16 @@ in
   # environment.
   home.packages = with pkgs; [
     btop
+    dunst
     gh
     gparted
     kitty
-    rofi
+    minecraft
     telegram-desktop
     thunderbird
     vscode
+    xfce.thunar
+    #xfce.xfce4-notifyd
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
     # pkgs.hello
@@ -50,9 +53,13 @@ in
   ];
   gtk = {
     enable = true;
+    theme = {
+      name = "Adwaita-dark";
+    };
+
     iconTheme = {
-      name = "Qogir-dark";
-      package = pkgs.qogir-icon-theme; 
+      name = "Tela-purple-dark";
+      package = pkgs.tela-icon-theme;
     };
     
     cursorTheme = {
@@ -61,7 +68,7 @@ in
       size = 48;
     };
   };
-
+  
   home.pointerCursor = {
     x11.enable = true;
     name = "BreezeX-RosePine-Linux";
@@ -101,6 +108,7 @@ in
   #  /etc/profiles/per-user/necoarc/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
+    # XDG_ICON_THEME = "Tela-purple-dark";
     # EDITOR = "emacs";
   };
 
