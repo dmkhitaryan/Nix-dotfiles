@@ -78,20 +78,19 @@
   };
 
   environment.xfce.excludePackages = with pkgs; [
-  #  xfce.exo
-  #  xfce.garcon
-  #  xfce.libxfce4ui
+    xfce.exo
+    xfce.garcon
+    xfce.libxfce4ui
 
-  #  xfce.mousepad
-  #  xfce.parole
-  #  xfce.ristretto
-  #  xfce.xfce4-appfinder
-    xfce.xfce4-notifyd
-  #  xfce.xfce4-screenshooter
+    xfce.mousepad
+    xfce.parole
+    xfce.ristretto
+    xfce.xfce4-appfinder
+    xfce.xfce4-screenshooter
     xfce.xfce4-session
     xfce.xfce4-settings
-  #  xfce.xfce4-taskmanager
-  #  xfce.xfce4-terminal
+    xfce.xfce4-taskmanager
+    xfce.xfce4-terminal
   ];
 
   # Configure keymap in X11
