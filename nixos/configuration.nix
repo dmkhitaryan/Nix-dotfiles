@@ -65,26 +65,34 @@
     dpi = 150;
     desktopManager = {
       xterm.enable = false;
+      xfce = {
+        enable = true;
+        noDesktop = true;
+        enableXfwm = false;
+      };
     };
-    windowManager.i3 = {
-      enable = true;
-      extraPackages = with pkgs; [
-        dmenu
-        i3status
-        i3lock
-      ]; 
-    };
+    windowManager.i3.enable = true;
   };
   services.displayManager = {
-    defaultSession = "none+i3";
+    defaultSession = "xfce+i3";
   };
-  programs.dconf.enable = true;
 
-  # programs.hyprland = {
-  #   enable = true;
-  #   withUWSM = true; # recommended for most users
-  #   xwayland.enable = true; # Xwayland can be disabled.
-  # };
+  environment.xfce.excludePackages = with pkgs; [
+  #  xfce.exo
+  #  xfce.garcon
+  #  xfce.libxfce4ui
+
+  #  xfce.mousepad
+  #  xfce.parole
+  #  xfce.ristretto
+  #  xfce.xfce4-appfinder
+    xfce.xfce4-notifyd
+  #  xfce.xfce4-screenshooter
+    xfce.xfce4-session
+    xfce.xfce4-settings
+  #  xfce.xfce4-taskmanager
+  #  xfce.xfce4-terminal
+  ];
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -134,7 +142,6 @@
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     btrfs-assistant
     blueman
-    brightnessctl
     flameshot
     floorp
     flatpak
@@ -142,16 +149,12 @@
     git
     gnumake
     lutris
-    lxappearance
     nitrogen
-    pamixer
-    playerctl
-    snixembed
     vesktop
     vlc
     wget
     winetricks
-    wineWowPackages.stable
+    wineWowPackages.stagingFull
     xorg.xev
   ];
 
@@ -202,7 +205,7 @@
     ];
     config = {
       common = {
-        x-cinnamon = [
+        default = [
           "gtk"
           "xapp"
         ];
@@ -214,7 +217,7 @@
 
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
- 
+
   # Enable Flatpak:
   services.flatpak.enable = true;
  
