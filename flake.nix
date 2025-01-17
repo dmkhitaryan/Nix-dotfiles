@@ -3,38 +3,53 @@
 
   inputs = {
     # Specify the source of Home Manager and Nixpkgs.
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    plasma-manager = {
-      url = "github:nix-community/plasma-manager";
+    aagl = {
+      url = "github:ezKEa/aagl-gtk-on-nix";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
     };
+
+    prismlauncher.url = "github:PrismLauncher/Prismlauncher";
+    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    
   };
 
-  outputs = inputs@{ nixpkgs, home-manager, plasma-manager, ... }:
-    let
-      system = "x86_64-linux";
-      pkgs = import nixpkgs { inherit system; config = { allowUnfree = true; }; };
-    in {
-      homeConfigurations = {
-        necoarc = home-manager.lib.homeManagerConfiguration {
-        # Specify your home configuration modules here, for example,
-        # the path to your home.nix.
-         inherit pkgs;
-         modules = [
-           inputs.plasma-manager.homeManagerModules.plasma-manager  
-           ./home.nix
-           ./kitty.nix
-         ];
+  outputs = { self, chaotic, nixpkgs, home-manager, prismlauncher, aagl, ... }@inputs: {
+    nixosConfigurations = {
+        necoarc = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./nixos/configuration.nix
+          chaotic.nixosModules.default
+          
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useUserPackages = true;
+            home-manager.useGlobalPkgs = true;
+            home-manager.users.necoarc = ./home.nix;
+          }
 
-        # Optionally use extraSpecialArgs
-        # to pass through arguments to home.nix
-        };
+          {
+            imports = [ aagl.nixosModules.default];
+            nix.settings = aagl.nixConfig; 
+            programs.honkers-railway-launcher.enable = true;
+          }
+
+          (
+            { pkgs, ...}:
+            {
+              environment.systemPackages = [ prismlauncher.packages.${pkgs.system}.prismlauncher ];
+            }
+          )
+        ];
       };
     };
+  };
 }

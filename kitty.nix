@@ -1,16 +1,23 @@
 { pkgs, ...}:
-
+let 
+  colors = rec {
+    background = "#F5F5DC";
+    foreground = "#5C4033";
+    linecolor = "#FB2E22";
+    bordercolor = "#555555";
+    accent = "#E60053";  
+  };
 {
   programs.kitty = {
     enable = true;
     font = {
       name = "Iosevka Extended";
-      size = 18;
+      size = 12;
     };
     settings = {
       #: The basic colors
-      background = "#433052"; 
-      foreground = "#F8F8F2";
+      background = "${colors.background}"; 
+      foreground = "${colors.foreground}";
 
       # Selected Text
       selection_background = "#882452";

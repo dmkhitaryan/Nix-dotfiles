@@ -1,8 +1,9 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let 
   kittyConfig = import ./kitty.nix { inherit pkgs; };
   stylesConfig = import ./styles.nix { inherit pkgs; };
+  polybarConfig = import ./polybar.nix { inherit pkgs; };
 in
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -13,8 +14,13 @@ in
   
   imports = [ 
     kittyConfig 
-    stylesConfig 
+    stylesConfig
+    polybarConfig 
   ];
+
+  xdg.configFile."i3/config".source = config.lib.file.mkOutOfStoreSymlink "/home/necoarc/dotfiles/i3/config"; 
+  #xdg.configFile."sway/config".source = config.lib.file.mkOutOfStoreSymlink "/home/necoarc/dotfiles/sway/sway.conf";
+
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
   # introduces backwards incompatible changes.
@@ -27,15 +33,7 @@ in
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
-    btop
-    gh
-    gparted
-    kitty
-    telegram-desktop
-    thunderbird
-    vscode
-    xfce.thunar
-    #xfce.xfce4-notifyd
+    
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
     # pkgs.hello

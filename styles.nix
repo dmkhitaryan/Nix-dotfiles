@@ -3,11 +3,12 @@
   gtk = {
     enable = true;
     theme = {
-      name = "Adwaita-dark";
+      name = "materia-theme";
+      package = pkgs.materia-theme;
     };
 
     iconTheme = {
-      name = "Tela-purple-dark";
+      name = "Tela-purple-light";
       package = pkgs.tela-icon-theme;
     };
     

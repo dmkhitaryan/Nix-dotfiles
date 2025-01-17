@@ -4,7 +4,7 @@ update-home:
 
 .PHONY: update-os
 update-os:
-	sudo nixos-rebuild switch --flake /home/necoarc/dotfiles/nixos
+	sudo nixos-rebuild switch --flake /home/necoarc/dotfiles#necoarc
 
 .PHONY: clean
 clean:

@@ -3,22 +3,35 @@
   # Enable OpenGL
   hardware.graphics = {
     enable = true;
+    enable32Bit = true;
   };
 
-  # Load nvidia driver for Xorg and Wayland
-  services.xserver.videoDrivers = ["nvidia"];
+ #Load nvidia driver for Xorg and Wayland
+  services.xserver.videoDrivers = ["amdgpu" "nvidia"];
+  boot.kernelModules = [ "amdgpu" ];
   
-  environment.variables = {
-    GBM_BACKEND = "nvidia-drm";
-    LIBVA_DRIVER_NAME = "nvidia";
-    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-  };
+  # environment.variables = {
+  #   GBM_BACKEND = "nvidia-drm";
+  #   LIBVA_DRIVER_NAME = "nvidia";
+  #   __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+  # };
 
-  environment.systemPackages = with pkgs; [
+  hardware.graphics.extraPackages = with pkgs; [
+    amdvlk
     vulkan-loader
     vulkan-validation-layers
     vulkan-tools
   ];
+  hardware.graphics.extraPackages32 = with pkgs; [
+    driversi686Linux.amdvlk
+  ];
+
+  # environment.systemPackages = with pkgs; [
+  #   vulkan-loader
+  #   vulkan-validation-layers
+  #   vulkan-tools
+  #   mesa
+  # ];
 
   hardware.nvidia = {
 
@@ -45,11 +58,12 @@
     open = lib.mkDefault false;
 
     prime = {
-        #amdgpuBusId = "PCI:5:0:0";
+        amdgpuBusId = "PCI:6:0:0";
         nvidiaBusId = "PCI:1:0:0";
       };
 
-    prime.offload.enable = false;
+    prime.offload.enable = true;
+    prime.offload.enableOffloadCmd = true;
 
 
     # Enable the Nvidia settings menu,
@@ -57,7 +71,7 @@
     nvidiaSettings = true;
 
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
-    package = config.boot.kernelPackages.nvidiaPackages.production;
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
   hardware.amdgpu.opencl.enable = lib.mkDefault false;
 }  
