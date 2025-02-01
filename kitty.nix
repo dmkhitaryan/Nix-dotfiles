@@ -7,6 +7,7 @@ let
     bordercolor = "#555555";
     accent = "#E60053";  
   };
+  in
 {
   programs.kitty = {
     enable = true;

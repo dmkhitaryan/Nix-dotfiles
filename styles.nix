@@ -8,7 +8,7 @@
     };
 
     iconTheme = {
-      name = "Tela-purple-light";
+      name = "Tela-purple";
       package = pkgs.tela-icon-theme;
     };
     

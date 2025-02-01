@@ -17,10 +17,11 @@
 
     prismlauncher.url = "github:PrismLauncher/Prismlauncher";
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    listentui.url = "github:dmkhitaryan/LISTEN.tui";
     
   };
 
-  outputs = { self, chaotic, nixpkgs, home-manager, prismlauncher, aagl, ... }@inputs: {
+  outputs = { self, chaotic, nixpkgs, home-manager, prismlauncher, aagl, listentui, ... }@inputs: {
     nixosConfigurations = {
         necoarc = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";

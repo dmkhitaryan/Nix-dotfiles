@@ -10,6 +10,12 @@
       ./hardware-configuration.nix
       ./nvidia.nix
       ./prism.nix
+      ./dmenu.nix
+
+      ({pkgs, inputs, ...}:
+      {
+        environment.systemPackages = [ inputs.listentui.packages.${pkgs.system}.default ];
+      })
     ];
   
  # Enable the X11 windowing system.
@@ -19,50 +25,68 @@
       desktopManager = {
         runXdgAutostartIfNone = true;
         xterm.enable = false;
-        xfce = {
-          enable = true;
-          noDesktop = true;
-          enableXfwm = false;
-        };
       };
-      displayManager.lightdm.enable = true;
-      windowManager.i3.enable = true;  
+      displayManager = {
+        lightdm.enable = true;
+        sessionCommands = ''
+          ${pkgs.xorg.xrdb}/bin/xrdb -merge <${pkgs.writeText "Xresources" ''
+          Xft.dpi: 144
+          ''}
+        '';
+      };
+      windowManager.i3 = {
+        enable = true;
+        extraPackages = with pkgs; [
+          dmenu
+          i3lock
+        ];
+      };  
     };
     displayManager = {
-      defaultSession = "xfce+i3";
+      defaultSession = "none+i3";
     };
   };
 
-  environment.xfce.excludePackages = with pkgs; [
-    xfce.exo
-    xfce.garcon
-    xfce.libxfce4ui
 
-    xfce.mousepad
-    xfce.parole
-    xfce.ristretto
-    xfce.xfce4-appfinder
-    xfce.xfce4-screenshooter
-    #xfce.xfce4-session
-    #xfce.xfce4-settings
-    xfce.xfce4-taskmanager
-    xfce.xfce4-terminal
-    xfce.xfce4-notifyd
-  ];
+  services = {
+    udisks2.enable = true;
+    accounts-daemon.enable = true;
+    upower.enable = config.powerManagement.enable;
+    gvfs.enable = true;
+    tumbler.enable = true;
+  };
 
+  security.polkit.enable = true;
+  programs.dconf.enable = true;
+  programs.thunar.enable = true;
+
+  
+  boot = {
+    kernelPackages = pkgs.linuxPackages;
+
+    # Bootloader.
+    loader = {
+      systemd-boot = {
+        enable = true;
+        configurationLimit = 5;
+      };
+
+      efi.canTouchEfiVariables = true;
+    };
+
+    kernelModules = [
+      "v4l2loopback" # Virtual camera.
+      "snd-aloop"    # Virtual microphone.
+    ];
+    extraModprobeConfig = ''
+      options v4l2loopback devices=1 video_nr=1 card_label="OBS Cam" exclusive_caps=1
+      hid_apple fnmode=0  
+    ''; # Disable Fn Lock on boot (for external KB) + set up virtual camera.
+  };
   #boot.kernelPackages = pkgs.linuxPackages_cachyos;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
 #  services.scx.enable = true;
 
-  
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  
-  #environment.pathsToLink = [ "/libexec" ];
-
-  # Disable Fn Lock on boot (for external KB).
-  boot.extraModprobeConfig = "options hid_apple fnmode = 0";
+  environment.pathsToLink = [ "/libexec" ];
   
   # Bluetooth turn-on.
   hardware.bluetooth.enable = true;
@@ -81,12 +105,6 @@
 
   # Set your time zone.
   time.timeZone = "Europe/Amsterdam";
-  
-  # programs.hyprland = {
-  #   enable = true;
-  #   withUWSM = true; # recommended for most users
-  #   xwayland.enable = true; # Xwayland can be disabled.
-  # };
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -142,6 +160,7 @@
    # Enable CUPS to print documents.
   services.printing.enable = true;
   services.gnome.gnome-keyring.enable = true;
+  security.pam.services.lightdm.enableGnomeKeyring = true;
 
   # Enable sound with pipewire.
   security.rtkit.enable = true;
@@ -173,9 +192,11 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   nix.settings.experimental-features = ["nix-command" "flakes"];
+
   environment.systemPackages = with pkgs; [
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     autotiling
+    brightnessctl
     btrfs-assistant
     blueman
     btop
@@ -192,11 +213,24 @@
     obs-studio
     killall
     kitty
-    lutris
+
+    
+    (lutris.override {
+      extraPkgs = pkgs: [
+        proton-ge-bin
+      ];
+    })
+    
+    lxappearance
+    networkmanagerapplet
     nitrogen
+    nix-prefetch-github
+    pavucontrol
     playerctl
+    protonup-qt
     protonvpn-cli_2
-    snixembed
+    python311Full
+    qbittorrent-enhanced
     telegram-desktop
     thunderbird
     vesktop
@@ -205,6 +239,7 @@
     wget
     winetricks
     wineWowPackages.stagingFull
+    xfce.xfce4-power-manager
     xorg.xev
   ];
 
@@ -293,11 +328,6 @@
   
   system.stateVersion = "24.11"; # Did you read the comment?
 
-  # nix.settings = {
-  #   substituters = [ "https://hyprland.cachix.org" ];
-  #   trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
-  # };
-
   services.picom = {
     enable = true;
     fade = true;
@@ -309,15 +339,23 @@
     backend = "xrender";
     settings = {
       blur = {
-	method = "dual_kawase";
+	#method = "dual_kawase";
 #	background = true;
 	strength = 5;
       };
-      #corner-radius = 10;
+      corner-radius = 10;
     };
   };
 
-  boot.loader.systemd-boot.configurationLimit = 5;
+  nix.settings = {
+  substituters = [
+    "https://cuda-maintainers.cachix.org"
+  ];
+  trusted-public-keys = [
+    "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
+  ];
+};
+
   nix.settings.auto-optimise-store = true;
 
   nix.registry.nixpkgs.flake = inputs.nixpkgs;

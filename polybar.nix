@@ -59,7 +59,7 @@
           use-ui-max = true;
           interval = 5;
 
-          master-soundcard = "hw:0";
+          master-soundcard = "hw:2,0";
           master-mixer = "PCM";
 
           #speaker-mixer = "Speaker";
