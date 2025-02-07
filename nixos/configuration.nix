@@ -10,7 +10,8 @@
       ./hardware-configuration.nix
       ./nvidia.nix
       ./prism.nix
-      ./dmenu.nix
+      #./dmenu.nix # Obsolete for now as I try out Reverse PRIME.
+      #.autorandr.nix # Don't use external monitors currently to consider this.
 
       ({pkgs, inputs, ...}:
       {
@@ -158,6 +159,7 @@
   };
 
    # Enable CUPS to print documents.
+  services.logind.lidSwitchExternalPower = "ignore";
   services.printing.enable = true;
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.lightdm.enableGnomeKeyring = true;
@@ -193,13 +195,17 @@
   # $ nix search wget
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
+ 
   environment.systemPackages = with pkgs; [
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    alsa-utils
     autotiling
     brightnessctl
     btrfs-assistant
     blueman
     btop
+    cudaPackages.cudatoolkit
+    cudaPackages.cudnn
     dunst
     flameshot
     floorp
@@ -211,6 +217,7 @@
     gnome-terminal
     gnumake
     obs-studio
+    kdePackages.kdenlive
     killall
     kitty
 
@@ -229,8 +236,6 @@
     playerctl
     protonup-qt
     protonvpn-cli_2
-    python311Full
-    qbittorrent-enhanced
     telegram-desktop
     thunderbird
     vesktop

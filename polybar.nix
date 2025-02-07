@@ -1,12 +1,21 @@
 {pkgs, ...}:
   let
     colors = rec {
-        background = "#F5F5DC";
-        foreground = "#5C4033";
-        linecolor = "#fb2e22";
+        background = "#433052";
+        foreground = "#FFFFFF";
+        linecolor = "#FFFACD";
         bordercolor = "#555555";
         accent = "#e60053";
       };
+    polybarAll = pkgs.writeShellScriptBin "polybarAll" ''
+      pkill polybar
+
+      while pgrep -x polybar >/dev/null; do sleep 0.5; done
+
+      for monitor in $(xrandr --query | grep "connected" | cut -d" " -f1); do
+        MONITOR=$monitor polybar top &
+      done
+    '';
   in
 {
     services.polybar = {
@@ -16,6 +25,7 @@
       alsaSupport = true;
       pulseSupport = true;
       };
+      #script = "${polybarAll}/bin/polybarAll";
       script = ''polybar --reload top &'';
       #extraConfig = builtins.readFile ./i3/polybar;
       config = {
@@ -59,7 +69,7 @@
           use-ui-max = true;
           interval = 5;
 
-          master-soundcard = "hw:2,0";
+          master-soundcard = "hw:0";
           master-mixer = "PCM";
 
           #speaker-mixer = "Speaker";

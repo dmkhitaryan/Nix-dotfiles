@@ -62,9 +62,9 @@
         nvidiaBusId = "PCI:1:0:0";
       };
 
-    prime.offload.enable = true;
-    prime.offload.enableOffloadCmd = true;
-
+    #prime.offload.enable = true;
+    #prime.offload.enableOffloadCmd = true;
+     prime.reverseSync.enable = true;
 
     # Enable the Nvidia settings menu,
 	# accessible via `nvidia-settings`.

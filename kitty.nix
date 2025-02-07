@@ -1,8 +1,8 @@
 { pkgs, ...}:
 let 
   colors = rec {
-    background = "#F5F5DC";
-    foreground = "#5C4033";
+    background = "#433052";
+    foreground = "#FFFFFF";
     linecolor = "#FB2E22";
     bordercolor = "#555555";
     accent = "#E60053";  

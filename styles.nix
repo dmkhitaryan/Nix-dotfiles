@@ -3,7 +3,7 @@
   gtk = {
     enable = true;
     theme = {
-      name = "materia-theme";
+      name = "Materia-dark";
       package = pkgs.materia-theme;
     };
 
