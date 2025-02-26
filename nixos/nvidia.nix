@@ -7,7 +7,7 @@
   };
 
  #Load nvidia driver for Xorg and Wayland
-  services.xserver.videoDrivers = ["amdgpu" "nvidia"];
+  services.xserver.videoDrivers = [ "nvidia" ]; #  "amdgpu"
   boot.kernelModules = [ "amdgpu" ];
   
   # environment.variables = {
@@ -55,23 +55,23 @@
     # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
     # Only available from driver 515.43.04+
     # Currently alpha-quality/buggy, so false is currently the recommended setting.
-    open = lib.mkDefault false;
+    open = lib.mkDefault true;
 
     prime = {
+        reverseSync.enable = true;
         amdgpuBusId = "PCI:6:0:0";
         nvidiaBusId = "PCI:1:0:0";
       };
 
     #prime.offload.enable = true;
     #prime.offload.enableOffloadCmd = true;
-     prime.reverseSync.enable = true;
 
     # Enable the Nvidia settings menu,
 	# accessible via `nvidia-settings`.
     nvidiaSettings = true;
 
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
   hardware.amdgpu.opencl.enable = lib.mkDefault false;
 }  

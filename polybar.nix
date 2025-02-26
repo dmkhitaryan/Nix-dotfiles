@@ -55,7 +55,7 @@
           font-1 = "0xProto Nerd Font:style=Regular:size=16;2";
           modules-left = "i3";
           modules-center = "xwindow";
-          modules-right = "alsa wifi battery filesystem cpu date tray";
+          modules-right = "pulseaudio wifi battery filesystem cpu date tray";
         };
 
         "module/tray" = {
@@ -64,17 +64,13 @@
           tray-size = "80%";
         };
 
-        "module/alsa" = {
-          type = "internal/alsa";
+        "module/pulseaudio" = {
+          type = "internal/pulseaudio";
           use-ui-max = true;
           interval = 5;
 
-          master-soundcard = "hw:0";
-          master-mixer = "PCM";
-
           #speaker-mixer = "Speaker";
           #headphone-mixer = "Headphone";
-          mapped = true;
   
           format-volume = "<label-volume> <bar-volume>";
           label-volume = "Vol: %percentage%%";

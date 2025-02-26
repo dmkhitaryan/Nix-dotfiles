@@ -7,59 +7,51 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ./nvidia.nix
-      ./prism.nix
-      #./dmenu.nix # Obsolete for now as I try out Reverse PRIME.
-      #.autorandr.nix # Don't use external monitors currently to consider this.
-      ./sway.nix
+      # ... | You can put other .nix files here so that you don't get your main config too bloated.
+
       ({pkgs, inputs, ...}:
       {
-        environment.systemPackages = [ inputs.listentui.packages.${pkgs.system}.default ];
+        environment.systemPackages = [ inputs.listentui.packages.${pkgs.system}.default ]; # An import of a 'custom' package from a flake.
       })
     ];
   
-#  # Enable the X11 windowing system.
-#   services = {
-#     xserver = {
-#       enable = true;
-#       desktopManager = {
-#         runXdgAutostartIfNone = true;
-#         xterm.enable = false;
-#       };
-#       displayManager = {
-#         lightdm.enable = true;
-#         sessionCommands = ''
-#           ${pkgs.xorg.xrdb}/bin/xrdb -merge <${pkgs.writeText "Xresources" ''
-#           Xft.dpi: 144
-#           ''}
-#         '';
-#       };
-#       windowManager.i3 = {
-#         enable = true;
-#         extraPackages = with pkgs; [
-#           dmenu
-#           i3lock
-#         ];
-#       };  
-#     };
-#     displayManager = {
-#       defaultSession = "none+i3";
-#     };
-#   };
+ # Enable the X11 windowing system.
+  services = {
+    xserver = {
+      enable = true;
+      desktopManager = {
+        runXdgAutostartIfNone = true;
+        xterm.enable = false;
+      };
+      displayManager = {
+        lightdm.enable = true;
+        sessionCommands = ''
+          ${pkgs.xorg.xrdb}/bin/xrdb -merge <${pkgs.writeText "Xresources" '' 
+          Xft.dpi: 144
+          ''} 
+        ''; # Sets the DPI value to one that works best for me. Not the best idea for multi-monitor setups, though.
+      };
+      windowManager.i3 = {
+        enable = true;
+        extraPackages = with pkgs; [
+          dmenu
+          i3lock
+        ];
+      };  
+    };
+    displayManager = {
+      defaultSession = "none+i3";
+    };
+  };
 
-  virtualisation.podman = {
-  enable = true;
-  dockerCompat = true;
-};
 
   services = {
     udisks2.enable = true;
-    #upower.enable = true;
     accounts-daemon.enable = true;
+    upower.enable = config.powerManagement.enable;
     gvfs.enable = true;
     tumbler.enable = true;
-  };
+  }; # A buncha services I have yoinked from XFCE (same with the three lines below).
 
   security.polkit.enable = true;
   programs.dconf.enable = true;
@@ -69,7 +61,7 @@
   boot = {
     kernelPackages = pkgs.linuxPackages;
 
-    # Bootloader.
+    # Bootloader. Limits max number of VISIBLE configuration entries to 5.
     loader = {
       systemd-boot = {
         enable = true;
@@ -80,6 +72,7 @@
     };
 
     kernelModules = [
+      "v4l2loopback" # Virtual camera.
       "snd-aloop"    # Virtual microphone.
     ];
     extraModprobeConfig = ''
@@ -87,17 +80,14 @@
       hid_apple fnmode=0  
     ''; # Disable Fn Lock on boot (for external KB) + set up virtual camera.
   };
-  #boot.kernelPackages = pkgs.linuxPackages_cachyos;
-#  services.scx.enable = true;
 
-#  environment.pathsToLink = [ "/libexec" ];
+  environment.pathsToLink = [ "/libexec" ];
   
   # Bluetooth turn-on.
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = false;
-  hardware.nvidia-container-toolkit.enable = true;
 
-  networking.hostName = "necoarc"; # Define your hostname.
+  networking.hostName = "..."; # Define your hostname.
   networking.enableIPv6 = false;
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -131,12 +121,12 @@
     LC_TIME = "nl_NL.UTF-8";
   };
   
-  i18n.inputMethod = {
+  i18n.inputMethod = { # Use FCITX5 as the IME. Not the best solution in some games, though.
     enable = true;
     type = "fcitx5";
     fcitx5 = {
       addons = with pkgs; [ fcitx5-mozc fcitx5-gtk ];
-      waylandFrontend = true;
+      #waylandFrontend = true;
       settings.inputMethod = {
         "Groups/0" = {
           "Name" = "Default";
@@ -162,8 +152,8 @@
     };
   };
 
-   # Enable CUPS to print documents.
-  services.logind.lidSwitchExternalPower = "ignore";
+
+  services.logind.lidSwitchExternalPower = "ignore"; # Don't sleep on closing lid.
   services.printing.enable = true;
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.lightdm.enableGnomeKeyring = true;
@@ -183,77 +173,30 @@
     #media-session.enable = true;
   };
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.necoarc = {
+  # Define a user account. Replace 'username' with your one.
+  users.users.username = {
     isNormalUser = true;
-    description = "Neco-Arc";
+    description = "Your username.";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
+      # Could put user packages here, but not needed if you use home-manager.
     ];
   };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
+  # Enable flakes and such.
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
- 
+   # System-wide packages with some examples.
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    alsa-utils
-    autotiling
-    brightnessctl
-    btrfs-assistant
-    blueman
-    btop
-    cudaPackages.cudatoolkit
-    cudaPackages.cudnn
-    (discord-canary.override {
-      withOpenASAR = true;
-      withVencord = true;
-    })
-    distrobox
-    flameshot
-    floorp
-    flatpak
-    file-roller
-    gh
-    git
-    gparted
-    gnome-terminal
-    gnumake
-    obs-studio
-    kdePackages.kdenlive
-    kdePackages.kolourpaint
-    killall
-    kitty
-    lutris
-    libnotify
-    lxappearance
-    networkmanagerapplet
-    nitrogen
-    nix-prefetch-github
-    nvidia-container-toolkit
-    pavucontrol
-    playerctl
-    protonup-qt
-    protonvpn-cli_2
-    telegram-desktop
-    thunderbird
-    vesktop
-    vlc
-    vscode
-    webcord-vencord
-    wget
-    winetricks
-    wineWowPackages.stagingFull
-    x11docker
-    xfce.xfce4-power-manager
-    xorg.xev
+  git
+  flatpak
+  wget
   ];
 
+  # Install fonts, setup what you want to use. 
   fonts = {
     packages = with pkgs; [
       font-awesome
@@ -262,7 +205,7 @@
       noto-fonts-emoji
       sarasa-gothic
     ];
-    fontconfig = {
+    fontconfig = { # The order matters. If you have a language that isn't supported by, say, Iosevka, then will try to use Sarasa, etc.
       defaultFonts = {
         serif = ["Iosevka Extended" "Sarasa Gothic"];
         sansSerif = ["Iosevka Extended" "Sarasa Gothic"];
@@ -286,7 +229,7 @@
     pinentryPackage = pkgs.pinentry.curses;
   };
 
-  # Steam setup.
+  # Steam setup, also with installation of the Proton-GE package.
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
@@ -300,16 +243,15 @@
   # Set up xdg-portals for Flatpak:
   xdg.portal = {
     enable = true;
-    wlr.enable = true;
+    #wlr.enable = true;
     xdgOpenUsePortal = true;
     extraPortals = with pkgs; [
-      xdg-desktop-portal-wlr
+      xdg-desktop-portal-gtk
     ];
     config = {
       common = {
         default = [
-          "wlr"
-         # "gtk"
+          "gtk"
         ];
       };
     };
@@ -341,26 +283,7 @@
   
   system.stateVersion = "24.11"; # Did you read the comment?
 
-#   services.picom = {
-#     enable = true;
-#     fade = true;
-#     vSync = true;
-# #    shadow = true;
-#     fadeDelta = 4 ;
-#     inactiveOpacity = 0.8;
-#     activeOpacity = 1;
-#     backend = "xrender";
-#     settings = {
-#       blur = {
-# 	#method = "dual_kawase";
-# #	background = true;
-# 	strength = 5;
-#       };
-#       corner-radius = 10;
-#     };
-#   };
-
-  nix.settings = {
+  nix.settings = { # CUDA cachix setup, reduces build times.
   substituters = [
     "https://cuda-maintainers.cachix.org"
   ];
@@ -369,12 +292,6 @@
   ];
 };
 
-  nix.settings.auto-optimise-store = true;
-
-  nix.registry.nixpkgs.flake = inputs.nixpkgs;
-  nix.channel.enable = false;
-
-  environment.etc."nix/inputs/nixpkgs".source = "${inputs.nixpkgs}";
-  nix.settings.nix-path = lib.mkForce "nixpkgs=/etc/nix/inputs/nixpkgs";
+  nix.settings.auto-optimise-store = true; # This command creates hard-links between identical files in the nix store.
 }
 

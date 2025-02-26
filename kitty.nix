@@ -13,7 +13,7 @@ let
     enable = true;
     font = {
       name = "Iosevka Extended";
-      size = 12;
+      size = 10;
     };
     settings = {
       #: The basic colors

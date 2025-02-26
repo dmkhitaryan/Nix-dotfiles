@@ -18,7 +18,7 @@ in
     polybarConfig 
   ];
 
-  xdg.configFile."i3/config".source = config.lib.file.mkOutOfStoreSymlink "/home/necoarc/dotfiles/i3/config"; 
+  #xdg.configFile."i3/config".source = config.lib.file.mkOutOfStoreSymlink "/home/necoarc/dotfiles/i3/config"; 
   #xdg.configFile."sway/config".source = config.lib.file.mkOutOfStoreSymlink "/home/necoarc/dotfiles/sway/sway.conf";
 
   # This value determines the Home Manager release that your configuration is
@@ -86,6 +86,45 @@ in
   home.sessionVariables = {
     # XDG_ICON_THEME = "Tela-purple-dark";
     # EDITOR = "emacs";
+  };
+
+  programs.bash = {
+    enable = true;
+    shellAliases = {
+      nrf = "sudo nixos-rebuild switch --flake /home/necoarc/dotfiles#necoarc";
+      ncg = "sudo nix-collect-garbage";
+      ncgd = "sudo nix-collect-garbage -d";
+    };
+  };
+  services = {
+    dunst = {
+      enable = true;
+
+      settings = {
+        global = {
+          scale = 2;
+          transparency = 15;
+          frame_color = "#DF3B86";
+          height = "(40, 300)";
+          width = "(150, 300)";
+          background = "#302239";
+          format = "<b>%a</b>\n%I%b";
+          alignment = "left";
+          vertical_alignment = "top";
+
+          max_icon_size = 36;
+        };   
+      };
+    };
+  };
+
+  wayland.windowManager.sway = {
+    enable = true;
+    package = null;
+    config = rec {
+      modifier = "Mod4";
+    };
+    systemd.xdgAutostart = true;
   };
 
   # Let Home Manager install and manage itself.

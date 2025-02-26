@@ -9,7 +9,11 @@
 
     iconTheme = {
       name = "Tela-purple";
-      package = pkgs.tela-icon-theme;
+      package = (pkgs.tela-icon-theme.overrideAttrs (oldAttrs: {
+        fixupPhase = (oldAttrs.preFixup or "") + ''
+          rm -rf $out/share/icons/Tela-light/24/panel/
+        '';
+      }));
     };
     
     cursorTheme = {
