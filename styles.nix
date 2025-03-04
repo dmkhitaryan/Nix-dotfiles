@@ -19,7 +19,7 @@
     cursorTheme = {
       name = "BreezeX-RosePine-Linux";
       package = pkgs.rose-pine-cursor;
-      size = 48;
+      size = 24;
     };
   };
   
@@ -27,6 +27,6 @@
     x11.enable = true;
     name = "BreezeX-RosePine-Linux";
     package = pkgs.rose-pine-cursor;
-    size = 48;
+    size = 24;
   };
 }

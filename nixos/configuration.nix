@@ -4,6 +4,9 @@
 
 {lib, inputs, config, pkgs, callPackage, ... }:
 
+let
+  mwc = pkgs.callPackage ./package.nix { };
+in
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -64,8 +67,14 @@
   security.polkit.enable = true;
   programs.dconf.enable = true;
   programs.thunar.enable = true;
+  programs.obs-studio = {
+    enable = true;
+    plugins = with pkgs.obs-studio-plugins; [
+      wlrobs
+      obs-pipewire-audio-capture
+    ];
+  };
 
-  
   boot = {
     kernelPackages = pkgs.linuxPackages;
 
@@ -172,8 +181,8 @@
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
+    #alsa.enable = true;
+    #alsa.support32Bit = true;
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
     jack.enable = true;
@@ -187,7 +196,7 @@
   users.users.necoarc = {
     isNormalUser = true;
     description = "Neco-Arc";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "audio" "video" ];
     packages = with pkgs; [
     ];
   };
@@ -203,7 +212,7 @@
   environment.systemPackages = with pkgs; [
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     alsa-utils
-    autotiling
+    autotiling-rs
     brightnessctl
     btrfs-assistant
     blueman
@@ -224,28 +233,34 @@
     gparted
     gnome-terminal
     gnumake
-    obs-studio
     kdePackages.kdenlive
     kdePackages.kolourpaint
     killall
     kitty
     lutris
+    cava
     libnotify
     lxappearance
+    mwc
     networkmanagerapplet
     nitrogen
+    
+    niri
+
     nix-prefetch-github
     nvidia-container-toolkit
     pavucontrol
     playerctl
     protonup-qt
     protonvpn-cli_2
+    swaybg
     telegram-desktop
     thunderbird
     vesktop
     vlc
     vscode
     webcord-vencord
+    wayfarer
     wget
     winetricks
     wineWowPackages.stagingFull
@@ -300,17 +315,29 @@
   # Set up xdg-portals for Flatpak:
   xdg.portal = {
     enable = true;
-    wlr.enable = true;
+    wlr = {
+      enable = true;
+    };
+
     xdgOpenUsePortal = true;
     extraPortals = with pkgs; [
-      xdg-desktop-portal-wlr
+      xdg-desktop-portal-gtk
+      xdg-desktop-portal-gnome
     ];
     config = {
-      common = {
+      niri = {
         default = [
-          "wlr"
-         # "gtk"
+          "gtk"
         ];
+        "org.freedesktop.impl.portal.ScreenShot" = lib.mkForce [ "gnome" ];
+        "org.freedesktop.impl.portal.ScreenCast" = lib.mkForce [ "gnome" ];
+      };
+      mwc = {
+        default = [
+          "gtk"
+        ];
+        "org.freedesktop.impl.portal.ScreenShot" = lib.mkForce [ "wlr" ];
+        "org.freedesktop.impl.portal.ScreenCast" = lib.mkForce [ "wlr" ];
       };
     };
   };
@@ -368,6 +395,8 @@
     "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
   ];
 };
+
+environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
   nix.settings.auto-optimise-store = true;
 

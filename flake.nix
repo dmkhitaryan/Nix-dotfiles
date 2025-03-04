@@ -18,7 +18,7 @@
     prismlauncher.url = "github:PrismLauncher/Prismlauncher";
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
     listentui.url = "github:dmkhitaryan/LISTEN.tui";
-    
+    #niri.url = "github:sodiboo/niri-flake";
   };
 
   outputs = { self, chaotic, nixpkgs, home-manager, prismlauncher, aagl, listentui, ... }@inputs: {
@@ -34,7 +34,12 @@
           {
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
-            home-manager.users.necoarc = ./home.nix;
+            home-manager.users.necoarc = { 
+            imports = [
+              ./home.nix
+              #niri.homeModules.niri
+            ];
+	    };
           }
 
           {
