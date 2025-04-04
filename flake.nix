@@ -18,10 +18,11 @@
     prismlauncher.url = "github:PrismLauncher/Prismlauncher";
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
     listentui.url = "github:dmkhitaryan/LISTEN.tui";
+    cute-sway-recorder.url = "github:it-is-wednesday/cute-sway-recorder";
     #niri.url = "github:sodiboo/niri-flake";
   };
 
-  outputs = { self, chaotic, nixpkgs, home-manager, prismlauncher, aagl, listentui, ... }@inputs: {
+  outputs = { self, chaotic, nixpkgs, home-manager, prismlauncher, aagl, listentui, cute-sway-recorder, ... }@inputs: {
     nixosConfigurations = {
         necoarc = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -34,6 +35,7 @@
           {
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
+            home-manager.extraSpecialArgs = { inherit inputs; };
             home-manager.users.necoarc = { 
             imports = [
               ./home.nix

@@ -27,12 +27,14 @@ in
   home.homeDirectory = "/home/necoarc";
   
   imports = [ 
-    kittyConfig 
+  #  kittyConfig 
     stylesConfig
-    polybarConfig 
+  #  polybarConfig 
   ];
 
-  #xdg.configFile."i3/config".source = config.lib.file.mkOutOfStoreSymlink "/home/necoarc/dotfiles/i3/config"; 
+    # Set up xdg-portals for Flatpak:
+
+  xdg.configFile."i3/config".source = config.lib.file.mkOutOfStoreSymlink "/home/necoarc/dotfiles/i3/config"; 
   #xdg.configFile."sway/config".source = config.lib.file.mkOutOfStoreSymlink "/home/necoarc/dotfiles/sway/sway.conf";
 
   # This value determines the Home Manager release that your configuration is
@@ -46,8 +48,9 @@ in
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
-  home.packages = with pkgs; [
-    xwayland-satellite
+  home.packages = [
+    pkgs.xwayland-satellite
+    #inputs.cute-sway-recorder.packages.${pkgs.system}.default
     
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
@@ -109,20 +112,21 @@ in
       nrf = "sudo nixos-rebuild switch --flake /home/necoarc/dotfiles#necoarc";
       ncg = "sudo nix-collect-garbage";
       ncgd = "sudo nix-collect-garbage -d";
+      sus = "systemctl suspend";
     };
   };
   services = {
     dunst = {
-      enable = true;
+      enable = false;
 
       settings = {
         global = {
           origin = "top-right";
-          scale = 3;
+          scale = 0;
           transparency = 15;
           frame_color = "#DF3B86";
           height = "(40, 300)";
-          width = "(225, 300)";
+          width = "(200, 300)";
           background = "#302239";
           format = "<b>%a</b>\n%I%b";
           alignment = "left";
@@ -131,6 +135,20 @@ in
           max_icon_size = 36;
         };   
       };
+    };
+    mako = {
+      enable = true;
+
+      backgroundColor = "#302239";
+      borderColor = "#DF3B86";
+      # borderRaius = 10;
+      defaultTimeout = 5000;
+      font = "Iosevka Extended 10";
+      height = 100;
+      ignoreTimeout = true;
+      layer = "overlay";
+      maxVisible = 3;
+      width = 300;
     };
   };
 
@@ -221,7 +239,7 @@ in
         position = "top";
         height = 30;
 
-        output = [ "eDP-1" ];
+        output = [ "*" ];
 
         modules-left = [ "niri/workspaces" "group/volume" ];
         modules-center = [ "niri/window" ];
@@ -288,7 +306,7 @@ in
 
         "group/volume" = {
           orientation = "horizontal";
-          modules = [ "cava" "pulseaudio" ];
+          modules = [ "cava" "pulseaudio" ]; #cava
         };
       };
 
@@ -366,10 +384,10 @@ in
     '';
   };
 
-  programs.tofi = {
-    enable = true;
-     settings = {
-        scale = false;
+  # programs.tofi = {
+  #   enable = true;
+  #    settings = {
+  #       scale = false;
     #   background-color = "#433052";
     #   text-color = "#FFFFFF";
     #   selection-color = "DF3B86";
@@ -381,8 +399,64 @@ in
     #   width = 2560;
     #   height = 30;
     #   anchor = "top";
-     };
+    #  };
+  # };
+
+  services.kanshi = {
+    enable = true;
+    settings = [
+      { profile.name = "solo";
+        profile.outputs = [
+          {
+            criteria = "eDP-1";
+            mode = "2560x1600@60.008";
+            scale = 1.25;
+          }
+        ];
+      }
+      { profile.name = "extended";
+        profile.outputs = [
+          {
+            criteria = "eDP-1";
+            status = "disable";
+          }
+          {
+            criteria = "*";
+            mode = "1920x1080@60.000";
+            scale = 1.00;
+            position = "0,0";
+          }
+        ];
+      }
+
+      { profile.name = "solo-x11";
+        profile.outputs = [
+          {
+            criteria = "eDP";
+            mode = "2560x1600@60.008";
+            scale = 1.25;
+          }
+        ];
+      }
+      { profile.name = "extended-x11";
+        profile.outputs = [
+          {
+            criteria = "eDP";
+            status = "disable";
+          }
+          {
+            criteria = "*";
+            mode = "1920x1080@60.000";
+            scale = 1.00;
+            position = "0,0";
+          }
+        ];
+      }
+    ];
+
+    systemdTarget = "graphical-session.target";
   };
+
 
   systemd.user.services.xwayland-satellite = {
     Unit = {

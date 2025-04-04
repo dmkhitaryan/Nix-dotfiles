@@ -15,41 +15,12 @@ in
       ./prism.nix
       #./dmenu.nix # Obsolete for now as I try out Reverse PRIME.
       #.autorandr.nix # Don't use external monitors currently to consider this.
-      ./sway.nix
+      #./sway.nix
       ({pkgs, inputs, ...}:
       {
         environment.systemPackages = [ inputs.listentui.packages.${pkgs.system}.default ];
       })
     ];
-  
-#  # Enable the X11 windowing system.
-#   services = {
-#     xserver = {
-#       enable = true;
-#       desktopManager = {
-#         runXdgAutostartIfNone = true;
-#         xterm.enable = false;
-#       };
-#       displayManager = {
-#         lightdm.enable = true;
-#         sessionCommands = ''
-#           ${pkgs.xorg.xrdb}/bin/xrdb -merge <${pkgs.writeText "Xresources" ''
-#           Xft.dpi: 144
-#           ''}
-#         '';
-#       };
-#       windowManager.i3 = {
-#         enable = true;
-#         extraPackages = with pkgs; [
-#           dmenu
-#           i3lock
-#         ];
-#       };  
-#     };
-#     displayManager = {
-#       defaultSession = "none+i3";
-#     };
-#   };
 
   virtualisation.podman = {
   enable = true;
@@ -57,26 +28,47 @@ in
 };
 
   services = {
+    blueman.enable = true;
+    gvfs.enable = true;
     udisks2.enable = true;
     #upower.enable = true;
     accounts-daemon.enable = true;
-    gvfs.enable = true;
     tumbler.enable = true;
+
+    # xserver.enable = true;
+    # xserver.displayManager.sddm.enable = true;
+    # xserver.displayManager.sddm.wayland.enable = true;
+    # xserver.desktopManager.plasma6.enable = true;
+    # xserver.displayManager.gdm.enable = true;
+    # xserver.desktopManager.gnome.enable = true;
+    greetd = {
+      enable = true;
+      settings = {
+          default_session = {
+              command = ''${pkgs.greetd.tuigreet}/bin/tuigreet --cmd niri-session'';
+              user = "greeter";
+          };
+      };
+    };
+  };
+
+  programs = {
+    niri.enable = true;
   };
 
   security.polkit.enable = true;
   programs.dconf.enable = true;
-  programs.thunar.enable = true;
   programs.obs-studio = {
     enable = true;
     plugins = with pkgs.obs-studio-plugins; [
       wlrobs
+      obs-vkcapture
       obs-pipewire-audio-capture
     ];
   };
 
   boot = {
-    kernelPackages = pkgs.linuxPackages;
+    kernelPackages = pkgs.linuxPackages_testing;
 
     # Bootloader.
     loader = {
@@ -88,18 +80,8 @@ in
       efi.canTouchEfiVariables = true;
     };
 
-    kernelModules = [
-      "snd-aloop"    # Virtual microphone.
-    ];
-    extraModprobeConfig = ''
-      options v4l2loopback devices=1 video_nr=1 card_label="OBS Cam" exclusive_caps=1
-      hid_apple fnmode=0  
-    ''; # Disable Fn Lock on boot (for external KB) + set up virtual camera.
+    extraModprobeConfig = ''hid_apple fnmode=0''; # Disable Fn Lock on boot (for external KB) + set up virtual camera.
   };
-  #boot.kernelPackages = pkgs.linuxPackages_cachyos;
-#  services.scx.enable = true;
-
-#  environment.pathsToLink = [ "/libexec" ];
   
   # Bluetooth turn-on.
   hardware.bluetooth.enable = true;
@@ -175,17 +157,20 @@ in
   services.logind.lidSwitchExternalPower = "ignore";
   services.printing.enable = true;
   services.gnome.gnome-keyring.enable = true;
-  security.pam.services.lightdm.enableGnomeKeyring = true;
 
   # Enable sound with pipewire.
-  security.rtkit.enable = true;
+  security.rtkit.enable = false;
   services.pipewire = {
     enable = true;
-    #alsa.enable = true;
-    #alsa.support32Bit = true;
+    # package = (pkgs.pipewire.overrideAttrs (finalAttrs: {
+    #   version = "1.4.1";
+    # }));
+    alsa.enable = true;
+    alsa.support32Bit = true;
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
     jack.enable = true;
+    wireplumber.enable = true;
 
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
@@ -207,15 +192,11 @@ in
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   nix.settings.experimental-features = ["nix-command" "flakes"];
-
  
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    alsa-utils
-    autotiling-rs
+    alacritty
     brightnessctl
     btrfs-assistant
-    blueman
     btop
     cudaPackages.cudatoolkit
     cudaPackages.cudnn
@@ -224,57 +205,57 @@ in
       withVencord = true;
     })
     distrobox
-    flameshot
+    file-roller
     floorp
     flatpak
-    file-roller
+    foot
+    fuzzel
     gh
     git
     gparted
-    gnome-terminal
+    gpu-screen-recorder-gtk
     gnumake
+    grim
+    helvum
     kdePackages.kdenlive
     kdePackages.kolourpaint
     killall
-    kitty
     lutris
-    cava
     libnotify
     lxappearance
-    mwc
+  #  mwc
+    nautilus
     networkmanagerapplet
-    nitrogen
-    
     niri
-
     nix-prefetch-github
     nvidia-container-toolkit
     pavucontrol
     playerctl
     protonup-qt
     protonvpn-cli_2
+    shared-mime-info
+    slurp
     swaybg
     telegram-desktop
     thunderbird
     vesktop
     vlc
+    vokoscreen-ng
     vscode
-    webcord-vencord
     wayfarer
     wget
     winetricks
     wineWowPackages.stagingFull
-    x11docker
-    xfce.xfce4-power-manager
-    xorg.xev
+    wl-clipboard
+    yt-dlp
   ];
 
   fonts = {
     packages = with pkgs; [
-      font-awesome
       iosevka
-      nerd-fonts._0xproto
-      noto-fonts-emoji
+      # nerdfonts
+     nerd-fonts._0xproto
+     noto-fonts-emoji
       sarasa-gothic
     ];
     fontconfig = {
@@ -312,32 +293,22 @@ in
     ];
   };
 
-  # Set up xdg-portals for Flatpak:
   xdg.portal = {
     enable = true;
-    wlr = {
-      enable = true;
-    };
-
     xdgOpenUsePortal = true;
     extraPortals = with pkgs; [
       xdg-desktop-portal-gtk
       xdg-desktop-portal-gnome
+      xdg-desktop-portal-wlr
     ];
     config = {
-      niri = {
-        default = [
-          "gtk"
-        ];
-        "org.freedesktop.impl.portal.ScreenShot" = lib.mkForce [ "gnome" ];
-        "org.freedesktop.impl.portal.ScreenCast" = lib.mkForce [ "gnome" ];
+      i3 = {
+        default = [ "gtk" ];
       };
-      mwc = {
-        default = [
-          "gtk"
-        ];
-        "org.freedesktop.impl.portal.ScreenShot" = lib.mkForce [ "wlr" ];
-        "org.freedesktop.impl.portal.ScreenCast" = lib.mkForce [ "wlr" ];
+      niri = {
+        default = [ "gnome" "gtk" ];
+        #  "org.freedesktop.impl.portal.ScreenShot" = [ "gnome" ];
+        #  "org.freedesktop.impl.portal.ScreenCast" = [ "gnome" ];
       };
     };
   };
@@ -368,25 +339,6 @@ in
   
   system.stateVersion = "24.11"; # Did you read the comment?
 
-#   services.picom = {
-#     enable = true;
-#     fade = true;
-#     vSync = true;
-# #    shadow = true;
-#     fadeDelta = 4 ;
-#     inactiveOpacity = 0.8;
-#     activeOpacity = 1;
-#     backend = "xrender";
-#     settings = {
-#       blur = {
-# 	#method = "dual_kawase";
-# #	background = true;
-# 	strength = 5;
-#       };
-#       corner-radius = 10;
-#     };
-#   };
-
   nix.settings = {
   substituters = [
     "https://cuda-maintainers.cachix.org"
@@ -397,13 +349,14 @@ in
 };
 
 environment.sessionVariables.NIXOS_OZONE_WL = "1";
+environment.pathsToLink = [ "/share/xdg-desktop-portal" "/share/applications" ];
 
-  nix.settings.auto-optimise-store = true;
+nix.settings.auto-optimise-store = true;
 
-  nix.registry.nixpkgs.flake = inputs.nixpkgs;
-  nix.channel.enable = false;
+nix.registry.nixpkgs.flake = inputs.nixpkgs;
+nix.channel.enable = false;
 
-  environment.etc."nix/inputs/nixpkgs".source = "${inputs.nixpkgs}";
-  nix.settings.nix-path = lib.mkForce "nixpkgs=/etc/nix/inputs/nixpkgs";
+environment.etc."nix/inputs/nixpkgs".source = "${inputs.nixpkgs}";
+nix.settings.nix-path = lib.mkForce "nixpkgs=/etc/nix/inputs/nixpkgs";
 }
 
