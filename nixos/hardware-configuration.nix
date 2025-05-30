@@ -25,9 +25,10 @@
       options = [ "fmask=0077" "dmask=0077" ];
     };
 
-  fileSystems."/home/necoarc/burenyuu" =
-    { device = "/dev/disk/by-uuid/a1ffe6d6-aaa6-4d38-a811-84b935d7fdcc";
+  fileSystems."/burenyuu" =
+    { device = "/dev/disk/by-uuid/7eb6a5fd-c514-4dc2-a1fb-ec60639b15ac";
       fsType = "btrfs";
+      options = [ "defaults" "user" "exec" ];
     };
 
   swapDevices =

@@ -15,10 +15,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    prismlauncher.url = "github:PrismLauncher/Prismlauncher";
+    
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
-    listentui.url = "github:dmkhitaryan/LISTEN.tui";
     cute-sway-recorder.url = "github:it-is-wednesday/cute-sway-recorder";
+    listentui.url = "github:dmkhitaryan/LISTEN.tui";
+    prismlauncher.url = "github:PrismLauncher/Prismlauncher";
+    zen-browser.url = "github:0xc000022070/zen-browser-flake";
     #niri.url = "github:sodiboo/niri-flake";
   };
 
@@ -38,7 +40,7 @@
             home-manager.extraSpecialArgs = { inherit inputs; };
             home-manager.users.necoarc = { 
             imports = [
-              ./home.nix
+              ./home/home.nix
               #niri.homeModules.niri
             ];
 	    };
