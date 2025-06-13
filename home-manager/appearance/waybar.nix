@@ -74,8 +74,8 @@
           format = "{volume}% {icon}";
           format-muted = "";
           format-icons = ["" ""];
-
           scroll-step = 5;
+          on-click-right = "pavucontrol";
         };
 
         "group/volume" = {

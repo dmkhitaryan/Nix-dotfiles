@@ -5,7 +5,6 @@
 {lib, inputs, config, pkgs, callPackage, ... }:
 
 let
-  mwc = pkgs.callPackage ./package.nix { };
   packagedRStudio = pkgs.rstudioWrapper.override{ packages = with pkgs.rPackages; [ ggplot2 dplyr ghql jsonlite]; };
 in
 {
@@ -13,18 +12,13 @@ in
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./nvidia.nix
-      ./prism.nix
-      # TUI anime radio.
-      ({pkgs, inputs, ...}:
-      {
-        environment.systemPackages = [ inputs.listentui.packages.${pkgs.system}.default ];
-      })
+      ./mwc/mwc.nix
     ];
   virtualisation = {
-    vmware = {
-      host.enable = true;
-      guest.enable = true;
-    };
+  #  vmware = {
+  #   host.enable = true;
+  #    guest.enable = true;
+  #  };
     podman = {
       enable = true;
       dockerCompat = true;
@@ -34,6 +28,7 @@ in
   services = {
     blueman.enable = true;
     gvfs.enable = true;
+    flatpak.enable = true;
     xserver.videoDrivers = [ "vmware" ];
     mullvad-vpn = {
       enable = true;
@@ -57,8 +52,15 @@ in
 
   programs = {
     dconf.enable = true;
-    # Some programs need SUID wrappers, can be configured further or are
-    # started in user sessions.
+    foot = {
+      enable = true;
+      settings = {
+        main = {
+          font="Iosevka:size=12";
+        };
+      };
+      theme = "catppuccin-mocha";
+    };
     gnupg.agent = {
       enable = true;
       enableSSHSupport = true;
@@ -66,6 +68,7 @@ in
     };
     niri.enable = true;
     mtr.enable = true;
+    mwc.enable = true;
     obs-studio = {
       enable = true;
       plugins = with pkgs.obs-studio-plugins; [
@@ -74,7 +77,6 @@ in
         obs-pipewire-audio-capture
       ];
     };
-    river.enable = true;
     steam = {
       enable = true;
       remotePlay.openFirewall = true;
@@ -88,8 +90,8 @@ in
 
   security.polkit.enable = true;
   boot = {
-    #kernelPackages = pkgs.linuxPackages_latest;
-    kernelPackages = pkgs.linuxPackages_cachyos;
+    kernelPackages = pkgs.linuxPackages_latest;
+    #kernelPackages = pkgs.linuxPackages_cachyos;
     kernelParams = [ "transparent_hugepage=never" ]; # Recommended for the use with VMWare.
 
     # Bootloader.
@@ -182,16 +184,16 @@ in
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
+    alsa.enable = true;
     pulse.enable = true;
     jack.enable = true;
-    wireplumber.enable = true;
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.necoarc = {
     isNormalUser = true;
     description = "Neco-Arc";
-    extraGroups = [ "networkmanager" "wheel" "audio" "video" ];
+    extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
     ];
   };
@@ -202,7 +204,7 @@ in
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    alacritty
+    alsa-utils
     appimage-run
     brightnessctl
     btrfs-assistant
@@ -216,16 +218,14 @@ in
     distrobox
     file-roller
     floorp
-    flatpak
     foot
-    fuzzel
-    gh
     git
     gparted
     gpu-screen-recorder-gtk
     gnumake
     grim
     helvum
+    inputs.listentui.packages.${pkgs.system}.default
     inputs.zen-browser.packages."${system}".twilight
     insomnia
     jq
@@ -235,18 +235,15 @@ in
     lutris
     libnotify
     lxappearance
-  #  mwc
-  #  nautilus
     nemo
     networkmanagerapplet
-    niri
     nix-prefetch-github
     #openutau
     packagedRStudio
     pavucontrol
     playerctl
+    prismlauncher
     protonup-qt
-    protonvpn-cli_2
     (python312.withPackages (ps: with ps; [
       jupyterlab
       matplotlib
@@ -262,13 +259,26 @@ in
     thunderbird
     vesktop
     vlc
-    vokoscreen-ng
     vscode
-    wayfarer
     wget
     winetricks
     wineWowPackages.stagingFull
     wl-clipboard
+    (pkgs.xwayland-satellite.overrideAttrs (finalAttrs: oldAttrs: {
+      cargoHash = "sha256-R3xXyXpHQw/Vh5Y4vFUl7n7jwBEEqwUCIZGAf9+SY1M=";
+      version = "0.6";
+      src = fetchFromGitHub {
+        owner = "Supreeeme";
+        repo = "xwayland-satellite";
+        tag = "v${finalAttrs.version}";
+        hash = "sha256-IiLr1alzKFIy5tGGpDlabQbe6LV1c9ABvkH6T5WmyRI=";
+      };
+
+      cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
+        inherit (finalAttrs) pname src version;
+        hash = finalAttrs.cargoHash;
+      };
+    }))
     yt-dlp
   ];
 
@@ -294,7 +304,6 @@ in
   };
 
   console = {
-    #font = "${pkgs.cozette}/share/fonts/opentype/CozetteVector.otf";
     packages = with pkgs; [ terminus_font ];
   };
 
@@ -314,7 +323,7 @@ in
         default = [ "gnome" "gtk" ];
         "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
       };
-      river = {
+      mwc = {
         default = [ "wlr" "gtk" ];
       };
     };
@@ -323,9 +332,6 @@ in
   # List services that you want to enable:
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
-
-  # Enable Flatpak:
-  services.flatpak.enable = true;
  
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
@@ -346,14 +352,33 @@ in
   system.stateVersion = "24.11"; # Did you read the comment?
   nix = {
     channel.enable = false;
+
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than-7d";
+      persistent = true;
+    };
+
+    optimise = {
+      automatic = true;
+      dates = [ "monthly" ];
+      persistent = true;
+    };
+
     settings = {
       auto-optimise-store = true;
       experimental-features = ["nix-command" "flakes"];
       nix-path = lib.mkForce "nixpkgs=/etc/nix/inputs/nixpkgs";
-      substituters = [ "https://cuda-maintainers.cachix.org" "https://chaotic-nyx.cachix.org/" ];
+      substituters = [ 
+        "https://cuda-maintainers.cachix.org" 
+        "https://chaotic-nyx.cachix.org/"
+        "https://prismlauncher.cachix.org"
+        ];
       trusted-public-keys = [ 
         "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
-        "chaotic-nyx.cachix.org-1:HfnXSw4pj95iI/n17rIDy40agHj12WfF+Gqk6SonIT8=" ];
+        "chaotic-nyx.cachix.org-1:HfnXSw4pj95iI/n17rIDy40agHj12WfF+Gqk6SonIT8="
+        "prismlauncher.cachix.org-1:9/n/FGyABA2jLUVfY+DEp4hKds/rwO+SCOtbOkDzd+c=" ];
     };
     registry.nixpkgs.flake = inputs.nixpkgs;
   };

@@ -23,17 +23,18 @@
     };
     mako = { # for Wayland.
       enable = true;
-
-      backgroundColor = "#302239";
-      borderColor = "#DF3B86";
-      # borderRaius = 10;
-      defaultTimeout = 5000;
-      font = "Iosevka Extended 10";
-      height = 100;
-      ignoreTimeout = true;
-      layer = "overlay";
-      maxVisible = 3;
-      width = 300;
+      settings = {
+        background-color = "#302239";
+        border-color = "#DF3B86";
+        # borderRaius = 10;
+        default-timeout = 5000;
+        font = "Iosevka Extended 10";
+        height = 100;
+        ignore-timeout = true;
+        layer = "overlay";
+        max-visible = 3;
+        width = 300;
+      };
     };
   };
 }
