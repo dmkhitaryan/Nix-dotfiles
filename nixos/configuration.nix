@@ -11,9 +11,10 @@ in
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./nvidia.nix
+      #./nvidia.nix
       ./mwc/mwc.nix
     ];
+
   virtualisation = {
   #  vmware = {
   #   host.enable = true;
@@ -25,6 +26,8 @@ in
     };
   };
 
+  systemd.network.wait-online.enable = false;
+
   services = {
     blueman.enable = true;
     gvfs.enable = true;
@@ -35,6 +38,7 @@ in
       package = pkgs.mullvad-vpn;
     };
     udisks2.enable = true;
+    scx.enable = true;
     #upower.enable = true;
     accounts-daemon.enable = true;
     tumbler.enable = true;
@@ -112,14 +116,22 @@ in
 
   networking.hostName = "necoarc"; # Define your hostname.
   networking.enableIPv6 = false;
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking.dhcpcd.wait = "if-carrier-up";
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable networking
-  networking.networkmanager.enable = true;
+  #networking.networkmanager.enable = true;
+  networking.wireless.iwd = {
+    enable = true;
+    settings =  {
+      Settings = {
+        AutoConnect = true;
+      };
+    };
+  };
 
   # Set your time zone.
   time.timeZone = "Europe/Amsterdam";
@@ -185,15 +197,22 @@ in
   services.pipewire = {
     enable = true;
     alsa.enable = true;
-    pulse.enable = true;
     jack.enable = true;
+
+    extraConfig.pipewire = {
+      "pipewire" = {
+        "context.properties" = {
+          "default.clock.min-quantum" = 256;
+        };
+      };
+    };
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.necoarc = {
     isNormalUser = true;
     description = "Neco-Arc";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "wheel" ];
     packages = with pkgs; [
     ];
   };
@@ -206,7 +225,6 @@ in
   environment.systemPackages = with pkgs; [
     alsa-utils
     appimage-run
-    brightnessctl
     btrfs-assistant
     btop
     cudaPackages.cudatoolkit
@@ -219,6 +237,7 @@ in
     file-roller
     floorp
     foot
+    fuzzel
     git
     gparted
     gpu-screen-recorder-gtk
@@ -226,17 +245,17 @@ in
     grim
     helvum
     inputs.listentui.packages.${pkgs.system}.default
-    inputs.zen-browser.packages."${system}".twilight
+    inputs.zen-browser.packages."${system}".beta
     insomnia
     jq
     kdePackages.kdenlive
     kdePackages.kolourpaint
+    kdePackages.spectacle
     killall
     lutris
     libnotify
     lxappearance
     nemo
-    networkmanagerapplet
     nix-prefetch-github
     #openutau
     packagedRStudio
@@ -252,6 +271,7 @@ in
       scikitlearn
     ]))
     r2modman
+    satty
     shared-mime-info
     slurp
     swaybg
@@ -262,23 +282,10 @@ in
     vscode
     wget
     winetricks
-    wineWowPackages.stagingFull
+    wineWow64Packages.waylandFull
     wl-clipboard
-    (pkgs.xwayland-satellite.overrideAttrs (finalAttrs: oldAttrs: {
-      cargoHash = "sha256-R3xXyXpHQw/Vh5Y4vFUl7n7jwBEEqwUCIZGAf9+SY1M=";
-      version = "0.6";
-      src = fetchFromGitHub {
-        owner = "Supreeeme";
-        repo = "xwayland-satellite";
-        tag = "v${finalAttrs.version}";
-        hash = "sha256-IiLr1alzKFIy5tGGpDlabQbe6LV1c9ABvkH6T5WmyRI=";
-      };
-
-      cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
-        inherit (finalAttrs) pname src version;
-        hash = finalAttrs.cargoHash;
-      };
-    }))
+    xwayland-satellite
+    youtube-music
     yt-dlp
   ];
 
@@ -296,11 +303,6 @@ in
         monospace = ["Iosevka Extended" "Sarasa Mono"];
       };
     };
-  };
-
-  # Install and set the default editor to Neovim.
-  programs.neovim = {
-    enable = true;
   };
 
   console = {
@@ -334,7 +336,7 @@ in
   # services.openssh.enable = true;
  
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedTCPPorts  [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
@@ -350,6 +352,14 @@ in
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   
   system.stateVersion = "24.11"; # Did you read the comment?
+  system.activationScripts = {
+    rfkillUnblockWlan = {
+      text = ''
+      rfkill unblock wlan
+      '';
+    };
+  };
+  
   nix = {
     channel.enable = false;
 
@@ -373,11 +383,13 @@ in
       substituters = [ 
         "https://cuda-maintainers.cachix.org" 
         "https://chaotic-nyx.cachix.org/"
+        "https://nix-community.cachix.org"
         "https://prismlauncher.cachix.org"
         ];
       trusted-public-keys = [ 
         "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
         "chaotic-nyx.cachix.org-1:HfnXSw4pj95iI/n17rIDy40agHj12WfF+Gqk6SonIT8="
+        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
         "prismlauncher.cachix.org-1:9/n/FGyABA2jLUVfY+DEp4hKds/rwO+SCOtbOkDzd+c=" ];
     };
     registry.nixpkgs.flake = inputs.nixpkgs;

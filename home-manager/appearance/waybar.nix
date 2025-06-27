@@ -17,7 +17,7 @@
 
         modules-left = [ "niri/workspaces" "group/volume" ];
         modules-center = [ "niri/window" ];
-        modules-right = ["clock" "tray"];
+        modules-right = [ "network" "clock" "tray"];
 
         "tray" = {
           icon-size = 24;
@@ -25,8 +25,8 @@
         };
 
         "clock" = {
-          format = "{:%H:%M}  ";
-          format-alt = " {:%A, %B %d, %Y}  ";
+          format = "{:%H:%M} ";
+          format-alt = " {:%A, %B %d, %Y} ";
           tooltip-format = "<tt><small>{calendar}</small></tt>";
           calendar = {
             mode = "year";
@@ -73,9 +73,19 @@
         "pulseaudio" = {
           format = "{volume}% {icon}";
           format-muted = "";
-          format-icons = ["" ""];
+          format-icons = [ "" "" ];
           scroll-step = 5;
           on-click-right = "pavucontrol";
+        };
+
+        "network" = {
+          format = "{ifname}";
+          format-wifi = "{essid} {icon}";
+          format-icons = [ "󰤟" "󰤢" "󰤨" ];
+          format-ethernet = "{ipaddr}/{cidr}  ";
+          format-disconnected = " ";
+          tooltip-format-wifi = "Up: {bandwithUpBytes} | Down: {bandwithDownBytes}";
+          max-length = 30;
         };
 
         "group/volume" = {
@@ -97,20 +107,20 @@
         }
 
         #workspaces {
-          margin: 0 10 0 0; 
+          margin: 0px 10px 0px 0px; 
         }
 
         #workspaces button {
           background-color: #882452;
           border: none;
-          border-radius: 0;
-          margin: -5 0 -5 0;
+          border-radius: 0px;
+          margin: -5px 0px -5px 0px;
         }
 
         #workspaces button.focused {
           background-color: #DF3B86;
           border: none;
-          border-radius: 0;
+          border-radius: 0px;
         }
 
         #workspaces button:hover {
@@ -118,40 +128,47 @@
         }
 
         #clock {
-          margin: 0 15 0 15;
+          margin: 0px 15px 0px 15px;
+        }
+
+        #network {
+          margin: 0px 10px 0px 10px;
+          padding: 0px 10px 0px 5px;
+          border-radius: 20px;
+          background: #882452;
         }
 
         #tray {
-          margin: 0 0 0 10;
-          padding: 0 10 0 10;
+          margin: 0px 0px 0px 10px;
+          padding: 0px 10px 0px 10px;
           background: #882452;
         }
 
         #volume {
           font-family: font-awesome;
-          margin: -3 10 -3 10;
+          margin: -3px 10px -3px 10px;
           background: #882452;
-          border-radius: 20;
+          border-radius: 20px;
         }
 
         #volume label#cava {
           color: rgba(0, 0, 0, 0.3);
-          margin: 0 5 0 0;
-          padding: 0 0 0 10;
+          margin: 0px 5px 0px 0px;
+          padding: 0px 0px 0px 10px;
         }
 
         #volume label#pulseaudio {
           color:  #FFFFFF;
-          margin: 0 0 0 5;
-          padding: 0 15 0 0;
+          margin: 0px 0px 0px 5px;
+          padding: 0px 15px 0px 0px;
 
         }
 
         #clock {
-          margin: -3 10 -3 0;
+          margin: -3px 10px -3px 0px;
           background: #882452;
-          border-radius: 20;
-          padding: 0 10 0 10;
+          border-radius: 20px;
+          padding: 0px 10px 0px 5px;
         }
 
 

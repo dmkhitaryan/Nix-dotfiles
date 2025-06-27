@@ -14,9 +14,11 @@
     ./services/systemd.nix
     ./services/kanshi.nix
     ./services/mako.nix
+
+    ./pkgs/emacs.nix
   #  polybarConfig
   ];
-
+  
   #xdg.configFile."i3/config".source = config.lib.file.mkOutOfStoreSymlink "/home/necoarc/dotfiles/i3/config"; 
   #xdg.configFile."sway/config".source = config.lib.file.mkOutOfStoreSymlink "/home/necoarc/dotfiles/sway/sway.conf";
 

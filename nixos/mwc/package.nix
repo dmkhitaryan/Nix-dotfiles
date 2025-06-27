@@ -28,7 +28,7 @@
       owner = "dqrk0jeste";
       repo = "mwc";
       rev = "refs/tags/v${finalAttrs.version}";
-      hash = "sha256-kJZI5TMxWHCZGErOgRqqPVm6t21qqlVCaLg8TDWKr+s=";
+      hash = "sha256-O/lFdkfAPC9CSXUkDiAEPWwcfdBUZXXNEEXmSriGzB0=";
     };
 
     nativeBuildInputs = [ pkg-config makeWrapper meson ninja wayland-protocols wayland-scanner ];
