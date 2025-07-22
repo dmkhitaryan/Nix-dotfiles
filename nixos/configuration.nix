@@ -1,18 +1,14 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
 {lib, inputs, config, pkgs, callPackage, ... }:
 
 let
   packagedRStudio = pkgs.rstudioWrapper.override{ packages = with pkgs.rPackages; [ ggplot2 dplyr ghql jsonlite]; };
 in
+
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      #./nvidia.nix
-      ./mwc/mwc.nix
+#      ./mwc/mwc.nix # Currently borked on unstable branch due to updating scenefx: 0.2.1 -> 0.4.1
     ];
 
   virtualisation = {
@@ -28,20 +24,11 @@ in
 
   systemd.network.wait-online.enable = false;
 
+  # Service-side configuration for NixOS.
   services = {
-    blueman.enable = true;
-    gvfs.enable = true;
-    flatpak.enable = true;
-    xserver.videoDrivers = [ "vmware" ];
-    mullvad-vpn = {
-      enable = true;
-      package = pkgs.mullvad-vpn;
-    };
-    udisks2.enable = true;
-    scx.enable = true;
-    #upower.enable = true;
     accounts-daemon.enable = true;
-    tumbler.enable = true;
+    blueman.enable = true;
+    flatpak.enable = true;
 
     greetd = {
       enable = true;
@@ -52,10 +39,45 @@ in
           };
       };
     };
+    gnome.gnome-keyring.enable = true;
+    gvfs.enable = true;
+    logind.lidSwitchExternalPower = "ignore";
+
+    mullvad-vpn = {
+      enable = true;
+      package = pkgs.mullvad-vpn;
+    }; 
+    
+    # Enable the OpenSSH daemon.
+    # services.openssh.enable = true;
+
+    # Enable sound with pipewire.
+    pipewire = {
+      enable = true;
+      alsa.enable = true;
+      jack.enable = true;
+      pulse.enable = true;
+
+      # extraConfig.pipewire = {
+      #   "pipewire" = {
+      #     "context.properties" = {
+      #       "default.clock.min-quantum" = 256;
+      #     };
+      #   };
+      # };
+    };
+
+    printing.enable = true;
+    tumbler.enable = true;
+    udisks2.enable = true;
+    upower.enable = true;
+    xserver.videoDrivers = [ "vmware" ];
   };
 
+  # Programs-related configuration for NixOS.
   programs = {
     dconf.enable = true;
+
     foot = {
       enable = true;
       settings = {
@@ -65,14 +87,17 @@ in
       };
       theme = "catppuccin-mocha";
     };
+
     gnupg.agent = {
       enable = true;
       enableSSHSupport = true;
       pinentryPackage = pkgs.pinentry.curses;
     };
+
     niri.enable = true;
     mtr.enable = true;
-    mwc.enable = true;
+   # mwc.enable = true;
+
     obs-studio = {
       enable = true;
       plugins = with pkgs.obs-studio-plugins; [
@@ -81,11 +106,13 @@ in
         obs-pipewire-audio-capture
       ];
     };
+
     steam = {
       enable = true;
       remotePlay.openFirewall = true;
       dedicatedServer.openFirewall = true;
       localNetworkGameTransfers.openFirewall = true;
+      #protontricks.enable = true;
       extraCompatPackages = with pkgs; [
         proton-ge-bin
       ];
@@ -95,7 +122,6 @@ in
   security.polkit.enable = true;
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
-    #kernelPackages = pkgs.linuxPackages_cachyos;
     kernelParams = [ "transparent_hugepage=never" ]; # Recommended for the use with VMWare.
 
     # Bootloader.
@@ -114,21 +140,23 @@ in
   hardware.bluetooth.powerOnBoot = false;
   hardware.nvidia-container-toolkit.enable = true;
 
-  networking.hostName = "necoarc"; # Define your hostname.
-  networking.enableIPv6 = false;
-  networking.dhcpcd.wait = "if-carrier-up";
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable networking
-  #networking.networkmanager.enable = true;
-  networking.wireless.iwd = {
-    enable = true;
-    settings =  {
-      Settings = {
-        AutoConnect = true;
+  networking = {
+    dhcpcd.wait = "if-carrier-up"; # shaves off seconds during boot by removing wait.
+    hostName = "necoarc";
+    enableIPv6 = false;
+  
+    # proxy = {
+      # default = "http://user:password@proxy:port/";
+      # noProxy = "127.0.0.1,localhost,internal.domain"; 
+    # }
+    
+    # Enable wireless networking using iwd.
+    wireless.iwd = {
+      enable = true;
+      settings =  {
+        Settings = {
+          AutoConnect = true;
+        };
       };
     };
   };
@@ -137,76 +165,60 @@ in
   time.timeZone = "Europe/Amsterdam";
 
   # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
-  i18n.supportedLocales = [
-    "en_US.UTF-8/UTF-8"
-    "ja_JP.UTF-8/UTF-8"
-    "nl_NL.UTF-8/UTF-8"  
-];
+  i18n = {
+    defaultLocale = "en_US.UTF-8";
 
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "nl_NL.UTF-8";
-    LC_IDENTIFICATION = "nl_NL.UTF-8";
-    LC_MEASUREMENT = "nl_NL.UTF-8";
-    LC_MONETARY = "nl_NL.UTF-8";
-    LC_NAME = "nl_NL.UTF-8";
-    LC_NUMERIC = "nl_NL.UTF-8";
-    LC_PAPER = "nl_NL.UTF-8";
-    LC_TELEPHONE = "nl_NL.UTF-8";
-    LC_TIME = "nl_NL.UTF-8";
-  };
-  
-  i18n.inputMethod = {
-    enable = true;
-    type = "fcitx5";
-    fcitx5 = {
-      addons = with pkgs; [ fcitx5-mozc fcitx5-gtk ];
-      waylandFrontend = true;
-      settings.inputMethod = {
-        "Groups/0" = {
-          "Name" = "Default";
-          "Default Layout" = "us";
-          "DefaultIM" = "mozc";
-        };
-        "Groups/0/Items/0" = {
-          "Name" = "keyboard-us";
-          "Layout" = null;
-        };
-        "Groups/0/Items/1" = {
-          "Name" = "keyboard-ru";
-          "Layout" = null;
-        };
-        "Groups/0/Items/2" = {
-          "Name" = "mozc";
-          "Layout" = null;
-        };
-        "GroupOrder" = {
-          "0" = "Default";
+    extraLocaleSettings = {
+      LC_ADDRESS = "nl_NL.UTF-8";
+      LC_IDENTIFICATION = "nl_NL.UTF-8";
+      LC_MEASUREMENT = "nl_NL.UTF-8";
+      LC_MONETARY = "nl_NL.UTF-8";
+      LC_NAME = "nl_NL.UTF-8";
+      LC_NUMERIC = "nl_NL.UTF-8";
+      LC_PAPER = "nl_NL.UTF-8";
+      LC_TELEPHONE = "nl_NL.UTF-8";
+      LC_TIME = "nl_NL.UTF-8";
+    };
+
+    inputMethod = {
+      enable = true;
+      type = "fcitx5";
+      fcitx5 = {
+        addons = with pkgs; [ fcitx5-mozc fcitx5-gtk ];
+        waylandFrontend = true;
+        settings.inputMethod = {
+          "Groups/0" = {
+            "Name" = "Default";
+            "Default Layout" = "us";
+            "DefaultIM" = "mozc";
+          };
+          "Groups/0/Items/0" = {
+            "Name" = "keyboard-us";
+            "Layout" = null;
+          };
+          "Groups/0/Items/1" = {
+            "Name" = "keyboard-ru";
+            "Layout" = null;
+          };
+          "Groups/0/Items/2" = {
+            "Name" = "mozc";
+            "Layout" = null;
+          };
+          "GroupOrder" = {
+            "0" = "Default";
+          };
         };
       };
     };
+
+    supportedLocales = [
+      "en_US.UTF-8/UTF-8"
+      "ja_JP.UTF-8/UTF-8"
+      "nl_NL.UTF-8/UTF-8"  
+    ];
   };
 
-   # Enable CUPS to print documents.
-  services.logind.lidSwitchExternalPower = "ignore";
-  services.printing.enable = true;
-  services.gnome.gnome-keyring.enable = true;
-
-  # Enable sound with pipewire.
   security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    jack.enable = true;
-
-    extraConfig.pipewire = {
-      "pipewire" = {
-        "context.properties" = {
-          "default.clock.min-quantum" = 256;
-        };
-      };
-    };
-  };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.necoarc = {
@@ -223,6 +235,7 @@ in
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    android-studio
     alsa-utils
     appimage-run
     btrfs-assistant
@@ -230,14 +243,16 @@ in
     cudaPackages.cudatoolkit
     cudaPackages.cudnn
     (discord-canary.override {
-      #withOpenASAR = true;
-      #withVencord = true;
+      withOpenASAR = true;
+      withVencord = true;
     })
     distrobox
+    evince
     file-roller
     floorp
     foot
     fuzzel
+    gimp3
     git
     gparted
     gpu-screen-recorder-gtk
@@ -247,13 +262,13 @@ in
     inputs.listentui.packages.${pkgs.system}.default
     inputs.zen-browser.packages."${system}".beta
     insomnia
+    jdk17
     jq
     kdePackages.kdenlive
-    kdePackages.kolourpaint
-    kdePackages.spectacle
     killall
-    lutris
+    loupe
     libnotify
+    lutris
     lxappearance
     nemo
     nix-prefetch-github
@@ -261,7 +276,14 @@ in
     packagedRStudio
     pavucontrol
     playerctl
-    prismlauncher
+    (prismlauncher.override {
+      jdks = [
+        graalvm-ce
+        zulu
+        zulu17
+        zulu8
+      ];
+    })
     protonup-qt
     (python312.withPackages (ps: with ps; [
       jupyterlab
@@ -274,6 +296,7 @@ in
     satty
     shared-mime-info
     slurp
+    steamtinkerlaunch
     swaybg
     telegram-desktop
     thunderbird
@@ -330,16 +353,6 @@ in
       };
     };
   };
-
-  # List services that you want to enable:
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
- 
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts  [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # Enable SysRq.
   boot.kernel.sysctl."kernel.sysrq" = 1; 

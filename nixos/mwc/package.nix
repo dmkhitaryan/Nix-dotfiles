@@ -31,7 +31,7 @@
       hash = "sha256-O/lFdkfAPC9CSXUkDiAEPWwcfdBUZXXNEEXmSriGzB0=";
     };
 
-    nativeBuildInputs = [ pkg-config makeWrapper meson ninja wayland-protocols wayland-scanner ];
+    nativeBuildInputs = [ scenefx pkg-config makeWrapper meson ninja wayland-protocols wayland-scanner ];
     buildInputs = [ libdrm libGL libinput libxcb libxkbcommon pixman scenefx wayland wlroots_0_18 ];
 
     passthru.providedSessions = [ "mwc" ];
