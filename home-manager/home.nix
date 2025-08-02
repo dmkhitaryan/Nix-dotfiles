@@ -34,18 +34,6 @@
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = [
-    #inputs.cute-sway-recorder.packages.${pkgs.system}.default
-    
-    # # Adds the 'hello' command to your environment. It prints a friendly
-    # # "Hello, world!" when run.
-    # pkgs.hello
-
-    # # It is sometimes useful to fine-tune packages, for example, by applying
-    # # overrides. You can do that directly here, just don't forget the
-    # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
-    # # fonts?
-    # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
-
     # # You can also create simple shell scripts directly inside your
     # # configuration. For example, this adds a command 'my-hello' to your
     # # environment:
@@ -85,10 +73,7 @@
   #
   #  /etc/profiles/per-user/necoarc/etc/profile.d/hm-session-vars.sh
   #
-  home.sessionVariables = {
-    # XDG_ICON_THEME = "Tela-purple-dark";
-    # EDITOR = "emacs";
-  };
+  home.sessionVariables = { };
 
   programs.bash = {
     enable = true;
@@ -100,23 +85,29 @@
     };
   };
 
-  # programs.tofi = {
-  #   enable = true;
-  #    settings = {
-  #       scale = false;
-    #   background-color = "#433052";
-    #   text-color = "#FFFFFF";
-    #   selection-color = "DF3B86";
-    #   border-width = 1;
-    #   border-color = "#DF3B86";
-    #   font = "Iosevka";
-    #   num-results = 5;
-    #   font-size = 6;
-    #   width = 2560;
-    #   height = 30;
-    #   anchor = "top";
-    #  };
-  # };
+  programs.tofi = {
+    enable = true;
+     settings = {
+      drun-launch = true;
+      scale = false;
+      horizontal = true;
+      result-spacing = 4;
+      padding-top = 4;
+      padding-bottom = 4;
+      outline-width = 0;
+      background-color = "#433052";
+      text-color = "#FFFFFF";
+      selection-color = "DF3B86";
+      border-width = 1;
+      border-color = "#DF3B86";
+      #font = "Iosevka";
+      num-results = 0;
+      font-size = 10;
+      width = 1920;
+      height = 30;
+      anchor = "top-left";
+     };
+  };
 
   
 

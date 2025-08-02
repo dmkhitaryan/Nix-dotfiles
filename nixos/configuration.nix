@@ -29,7 +29,6 @@ in
     accounts-daemon.enable = true;
     blueman.enable = true;
     flatpak.enable = true;
-
     greetd = {
       enable = true;
       settings = {
@@ -57,14 +56,6 @@ in
       alsa.enable = true;
       jack.enable = true;
       pulse.enable = true;
-
-      # extraConfig.pipewire = {
-      #   "pipewire" = {
-      #     "context.properties" = {
-      #       "default.clock.min-quantum" = 256;
-      #     };
-      #   };
-      # };
     };
 
     printing.enable = true;
@@ -77,6 +68,7 @@ in
   # Programs-related configuration for NixOS.
   programs = {
     dconf.enable = true;
+    direnv.enable = true;
 
     foot = {
       enable = true;
@@ -272,6 +264,7 @@ in
     lxappearance
     nemo
     nix-prefetch-github
+    npins
     #openutau
     packagedRStudio
     pavucontrol
@@ -300,13 +293,13 @@ in
     swaybg
     telegram-desktop
     thunderbird
-    vesktop
     vlc
     vscode
     wget
     winetricks
     wineWow64Packages.waylandFull
     wl-clipboard
+    wl-gammarelay-rs
     xwayland-satellite
     youtube-music
     yt-dlp
@@ -372,6 +365,14 @@ in
       '';
     };
   };
+
+  system.userActivationScripts.regenerateTofiCache = {
+    text = 
+    ''
+      tofi_cache="$HOME/.cache/tofi-drun"
+      [[ -f "$tofi_cache" ]] && rm "$tofi_cache"
+    '';
+  };
   
   nix = {
     channel.enable = false;
@@ -410,5 +411,29 @@ in
 
 environment.sessionVariables.NIXOS_OZONE_WL = "1";
 environment.etc."nix/inputs/nixpkgs".source = "${inputs.nixpkgs}";
+environment.etc."nvidia/nvidia-application-profiles-rc.d/50-limit-free-buffer-pool-in-wayland-compositors.json".text = ''
+{
+    "rules": [
+        {
+            "pattern": {
+                "feature": "procname",
+                "matches": "niri"
+            },
+            "profile": "Limit Free Buffer Pool On Wayland Compositors"
+        }
+    ],
+    "profiles": [
+        {
+            "name": "Limit Free Buffer Pool On Wayland Compositors",
+            "settings": [
+                {
+                    "key": "GLVidHeapReuseRatio",
+                    "value": 0
+                }
+            ]
+        }
+    ]
+}
+'';
 }
 

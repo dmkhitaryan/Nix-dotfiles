@@ -1,23 +1,20 @@
 { pkgs, ... }:
 {
+  dconf.settings = {
+    "org/gnome/desktop/interface" = {
+      color-scheme = "prefer-light";
+    };
+  };
+
   gtk = {
     enable = true;
     theme = {
-      name = "Materia-dark";
-      package = pkgs.materia-theme;
-    };
-
-    iconTheme = {
-      name = "Tela-purple";
-      package = (pkgs.tela-icon-theme.overrideAttrs (oldAttrs: {
-        fixupPhase = (oldAttrs.preFixup or "") + ''
-          rm -rf $out/share/icons/Tela-light/24/panel/
-        '';
-      }));
+      name = "Adwaita";
+      #package = pkgs.orchis-theme;
     };
     
     cursorTheme = {
-      name = "BreezeX-RosePine-Linux";
+      name = "BreezeX-RosePineDawn-Linux";
       package = pkgs.rose-pine-cursor;
       size = 24;
     };
@@ -25,7 +22,7 @@
   
   home.pointerCursor = {
     x11.enable = true;
-    name = "BreezeX-RosePine-Linux";
+    name = "BreezeX-RosePineDawn-Linux";
     package = pkgs.rose-pine-cursor;
     size = 24;
   };
