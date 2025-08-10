@@ -25,7 +25,7 @@
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
   };
 
-  outputs = { self, chaotic, nixpkgs, home-manager, aagl, listentui, nix-flatpak, nixos-hardware, emacs-overlay, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, aagl, listentui, nix-flatpak, nixos-hardware, emacs-overlay, ... }@inputs: {
     nixosConfigurations = {
         necoarc = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";

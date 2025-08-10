@@ -104,7 +104,6 @@ in
       remotePlay.openFirewall = true;
       dedicatedServer.openFirewall = true;
       localNetworkGameTransfers.openFirewall = true;
-      #protontricks.enable = true;
       extraCompatPackages = with pkgs; [
         proton-ge-bin
       ];
@@ -113,6 +112,7 @@ in
 
   security.polkit.enable = true;
   boot = {
+    blacklistedKernelModules = [ "hp_wmi" ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [ "transparent_hugepage=never" ]; # Recommended for the use with VMWare.
 
@@ -227,7 +227,6 @@ in
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    android-studio
     alsa-utils
     appimage-run
     btrfs-assistant
@@ -254,7 +253,6 @@ in
     inputs.listentui.packages.${pkgs.system}.default
     inputs.zen-browser.packages."${system}".beta
     insomnia
-    jdk17
     jq
     kdePackages.kdenlive
     killall
@@ -264,6 +262,7 @@ in
     lxappearance
     nemo
     nix-prefetch-github
+    nixpkgs-review
     npins
     #openutau
     packagedRStudio
@@ -358,14 +357,6 @@ in
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   
   system.stateVersion = "24.11"; # Did you read the comment?
-  system.activationScripts = {
-    rfkillUnblockWlan = {
-      text = ''
-      rfkill unblock wlan
-      '';
-    };
-  };
-
   system.userActivationScripts.regenerateTofiCache = {
     text = 
     ''
