@@ -6,6 +6,7 @@
   home.username = "necoarc";
   home.homeDirectory = "/home/necoarc";
   
+  
   imports = [ 
   #  kittyConfig 
     ./appearance/styles.nix
@@ -109,7 +110,12 @@
      };
   };
 
-  
+  home.file.".local/share/icons/hicolor/256x256/apps/ruko.png".source = ./ruko.png;
+  xdg.desktopEntries.discord-canary = {
+    name = "Not Discord";
+    exec = "discordcanary";
+    icon = "ruko";
+  };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;

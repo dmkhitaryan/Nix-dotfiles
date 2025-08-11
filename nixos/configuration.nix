@@ -240,7 +240,6 @@ in
     distrobox
     evince
     file-roller
-    floorp
     foot
     fuzzel
     gimp3
