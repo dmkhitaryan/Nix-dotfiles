@@ -1,13 +1,10 @@
 {lib, inputs, config, pkgs, callPackage, ... }:
-
-let
-  packagedRStudio = pkgs.rstudioWrapper.override{ packages = with pkgs.rPackages; [ ggplot2 dplyr ghql jsonlite]; };
-in
-
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./pkgs.nix
+      ./misc.nix # Nix-specific configuration.
 #      ./mwc/mwc.nix # Currently borked on unstable branch due to updating scenefx: 0.2.1 -> 0.4.1
     ];
 
@@ -29,6 +26,7 @@ in
     accounts-daemon.enable = true;
     blueman.enable = true;
     flatpak.enable = true;
+
     greetd = {
       enable = true;
       settings = {
@@ -47,9 +45,6 @@ in
       package = pkgs.mullvad-vpn;
     }; 
     
-    # Enable the OpenSSH daemon.
-    # services.openssh.enable = true;
-
     # Enable sound with pipewire.
     pipewire = {
       enable = true;
@@ -92,6 +87,11 @@ in
 
     obs-studio = {
       enable = true;
+      package = (
+        pkgs.obs-studio.override {
+          cudaSupport = true;
+        }
+      );
       plugins = with pkgs.obs-studio-plugins; [
         wlrobs
         obs-vkcapture
@@ -124,28 +124,33 @@ in
       };
       efi.canTouchEfiVariables = true;
     };
-    extraModprobeConfig = ''hid_apple fnmode=0''; # Disable Fn Lock on boot (for external KB) + set up virtual camera.
+    extraModprobeConfig = ''
+      options hid_apple fnmode=0 
+    ''; # Disable Fn Lock on boot (for external KB) + set up virtual camera.
   };
   
   # Bluetooth turn-on.
-  hardware.bluetooth.enable = true;
-  hardware.bluetooth.powerOnBoot = false;
-  hardware.nvidia-container-toolkit.enable = true;
+  hardware = {
+    bluetooth = {
+      enable = true;
+      powerOnBoot = false;
+    };
+    nvidia-container-toolkit.enable = true;
+  };
 
+  # Networking settings.
   networking = {
     dhcpcd.wait = "if-carrier-up"; # shaves off seconds during boot by removing wait.
     hostName = "necoarc";
     enableIPv6 = false;
   
-    # proxy = {
-      # default = "http://user:password@proxy:port/";
-      # noProxy = "127.0.0.1,localhost,internal.domain"; 
-    # }
-    
     # Enable wireless networking using iwd.
     wireless.iwd = {
       enable = true;
       settings =  {
+        General = {
+          EnableNetworkConfiguration = true;
+        };
         Settings = {
           AutoConnect = true;
         };
@@ -203,7 +208,7 @@ in
       };
     };
 
-    supportedLocales = [
+    extraLocales = [
       "en_US.UTF-8/UTF-8"
       "ja_JP.UTF-8/UTF-8"
       "nl_NL.UTF-8/UTF-8"  
@@ -224,90 +229,11 @@ in
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    alsa-utils
-    appimage-run
-    btrfs-assistant
-    btop
-    cudaPackages.cudatoolkit
-    cudaPackages.cudnn
-    (discord-canary.override {
-      withOpenASAR = true;
-      withVencord = true;
-    })
-    distrobox
-    evince
-    file-roller
-    foot
-    fuzzel
-    gimp3
-    git
-    gparted
-    gpu-screen-recorder-gtk
-    gnumake
-    grim
-    helvum
-    inputs.listentui.packages.${pkgs.system}.default
-    inputs.zen-browser.packages."${system}".beta
-    insomnia
-    jq
-    kdePackages.kdenlive
-    killall
-    loupe
-    libnotify
-    lutris
-    lxappearance
-    nemo
-    nix-prefetch-github
-    nixpkgs-review
-    npins
-    #openutau
-    packagedRStudio
-    pavucontrol
-    playerctl
-    (prismlauncher.override {
-      jdks = [
-        graalvm-ce
-        zulu
-        zulu17
-        zulu8
-      ];
-    })
-    protonup-qt
-    (python312.withPackages (ps: with ps; [
-      jupyterlab
-      matplotlib
-      pandas
-      statsmodels
-      scikitlearn
-    ]))
-    r2modman
-    satty
-    shared-mime-info
-    slurp
-    steamtinkerlaunch
-    swaybg
-    telegram-desktop
-    thunderbird
-    vlc
-    vscode
-    wget
-    winetricks
-    wineWow64Packages.waylandFull
-    wl-clipboard
-    wl-gammarelay-rs
-    xwayland-satellite
-    youtube-music
-    yt-dlp
-  ];
-
   fonts = {
     packages = with pkgs; [
       iosevka
-     nerd-fonts._0xproto
-     noto-fonts-emoji
+      nerd-fonts._0xproto
+      noto-fonts-emoji
       sarasa-gothic
     ];
     fontconfig = {
@@ -347,15 +273,8 @@ in
 
   # Enable SysRq.
   boot.kernel.sysctl."kernel.sysrq" = 1; 
- 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   
-  system.stateVersion = "24.11"; # Did you read the comment?
+  system.stateVersion = "24.11";
   system.userActivationScripts.regenerateTofiCache = {
     text = 
     ''
@@ -364,66 +283,5 @@ in
     '';
   };
   
-  nix = {
-    channel.enable = false;
-
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than-7d";
-      persistent = true;
-    };
-
-    optimise = {
-      automatic = true;
-      dates = [ "monthly" ];
-      persistent = true;
-    };
-
-    settings = {
-      auto-optimise-store = true;
-      experimental-features = ["nix-command" "flakes"];
-      nix-path = lib.mkForce "nixpkgs=/etc/nix/inputs/nixpkgs";
-      substituters = [ 
-        "https://cuda-maintainers.cachix.org" 
-        "https://chaotic-nyx.cachix.org/"
-        "https://nix-community.cachix.org"
-        "https://prismlauncher.cachix.org"
-        ];
-      trusted-public-keys = [ 
-        "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
-        "chaotic-nyx.cachix.org-1:HfnXSw4pj95iI/n17rIDy40agHj12WfF+Gqk6SonIT8="
-        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-        "prismlauncher.cachix.org-1:9/n/FGyABA2jLUVfY+DEp4hKds/rwO+SCOtbOkDzd+c=" ];
-    };
-    registry.nixpkgs.flake = inputs.nixpkgs;
-  };
-
-environment.sessionVariables.NIXOS_OZONE_WL = "1";
-environment.etc."nix/inputs/nixpkgs".source = "${inputs.nixpkgs}";
-environment.etc."nvidia/nvidia-application-profiles-rc.d/50-limit-free-buffer-pool-in-wayland-compositors.json".text = ''
-{
-    "rules": [
-        {
-            "pattern": {
-                "feature": "procname",
-                "matches": "niri"
-            },
-            "profile": "Limit Free Buffer Pool On Wayland Compositors"
-        }
-    ],
-    "profiles": [
-        {
-            "name": "Limit Free Buffer Pool On Wayland Compositors",
-            "settings": [
-                {
-                    "key": "GLVidHeapReuseRatio",
-                    "value": 0
-                }
-            ]
-        }
-    ]
-}
-'';
 }
 

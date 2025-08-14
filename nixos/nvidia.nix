@@ -26,13 +26,6 @@
    driversi686Linux.amdvlk
   ];
 
-  # environment.systemPackages = with pkgs; [
-  #   vulkan-loader
-  #   vulkan-validation-layers
-  #   vulkan-tools
-  #   mesa
-  # ];
-
   hardware.nvidia = {
 
     # Modesetting is required.

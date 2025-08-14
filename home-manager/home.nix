@@ -1,4 +1,9 @@
 { inputs, config, pkgs, lib, ... }:
+# let
+#   qt-color-widgets = pkgs.callPackage ./package2.nix {};
+#   qhotkey = pkgs.callPackage ./package3.nix {};
+#   flameshot13 = pkgs.callPackage ./package.nix { inherit qt-color-widgets qhotkey; };
+# in
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -19,6 +24,11 @@
     ./pkgs/emacs.nix
   #  polybarConfig
   ];
+  
+  # services.flameshot = {
+  #   enable = true;
+  #   package = flameshot13;
+  # };
   
   #xdg.configFile."i3/config".source = config.lib.file.mkOutOfStoreSymlink "/home/necoarc/dotfiles/i3/config"; 
   #xdg.configFile."sway/config".source = config.lib.file.mkOutOfStoreSymlink "/home/necoarc/dotfiles/sway/sway.conf";

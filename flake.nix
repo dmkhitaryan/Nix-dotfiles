@@ -25,11 +25,17 @@
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
   };
 
-  outputs = { self, nixpkgs, home-manager, aagl, listentui, nix-flatpak, nixos-hardware, emacs-overlay, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, aagl, listentui, nix-flatpak, nixos-hardware, emacs-overlay, ... }@inputs: 
+    let
+      enableHardware = true;
+      hardwareModel = "lenovo-legion-16achg6-nvidia";
+    in
+    {
     nixosConfigurations = {
         necoarc = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = { inherit inputs; };
+        
         
         modules = [
           {
@@ -39,7 +45,7 @@
           }
 
           ./nixos/configuration.nix
-          nixos-hardware.nixosModules.lenovo-legion-16achg6-nvidia
+          
           aagl.nixosModules.default
           nix-flatpak.nixosModules.nix-flatpak
 
@@ -60,7 +66,7 @@
             ];
 	    };
           }
-        ];
+        ] ++ nixpkgs.lib.optional enableHardware nixos-hardware.nixosModules.${hardwareModel};
       };
     };
   };
