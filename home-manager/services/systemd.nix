@@ -44,12 +44,12 @@
       Install.WantedBy = [ "niri.service" ];
     };
 
-    networkUnblock = {
+    networkUnblock = { # Should execute during greetd login.
       Unit = {
         Description = "Unblocks wifi card (used with iwd)";
-        BindsTo = "graphical-session.target";
-        Requires = "graphical-session.target";
-        After = "graphical-session.target";
+        BindsTo = "default.target";
+        Requires = "default.target";
+        After = "default.target";
       };
       Service = {
         Type = "oneshot";
@@ -58,7 +58,7 @@
         StandardError = "journal";
       };
 
-      Install.WantedBy = [ "niri.service" ];
+      Install.WantedBy = [ "default.target" ];
     };
   };
 }

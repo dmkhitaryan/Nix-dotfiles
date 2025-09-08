@@ -1,9 +1,4 @@
 { inputs, config, pkgs, lib, ... }:
-# let
-#   qt-color-widgets = pkgs.callPackage ./package2.nix {};
-#   qhotkey = pkgs.callPackage ./package3.nix {};
-#   flameshot13 = pkgs.callPackage ./package.nix { inherit qt-color-widgets qhotkey; };
-# in
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -13,22 +8,15 @@
   
   
   imports = [ 
-  #  kittyConfig 
     ./appearance/styles.nix
     ./appearance/waybar.nix
 
     ./services/systemd.nix
-    ./services/kanshi.nix
     ./services/mako.nix
 
     ./pkgs/emacs.nix
-  #  polybarConfig
   ];
   
-  # services.flameshot = {
-  #   enable = true;
-  #   package = flameshot13;
-  # };
   
   #xdg.configFile."i3/config".source = config.lib.file.mkOutOfStoreSymlink "/home/necoarc/dotfiles/i3/config"; 
   #xdg.configFile."sway/config".source = config.lib.file.mkOutOfStoreSymlink "/home/necoarc/dotfiles/sway/sway.conf";
@@ -102,7 +90,7 @@
       drun-launch = true;
       scale = false;
       horizontal = true;
-      result-spacing = 4;
+      result-spacing = 16;
       padding-top = 4;
       padding-bottom = 4;
       outline-width = 0;
@@ -111,20 +99,20 @@
       selection-color = "DF3B86";
       border-width = 1;
       border-color = "#DF3B86";
-      #font = "Iosevka";
-      num-results = 0;
-      font-size = 10;
+      font = "${pkgs.iosevka}/share/fonts/truetype/Iosevka-Extended.ttf";
+      num-results = 12;
+      font-size = 12;
       width = 1920;
       height = 30;
       anchor = "top-left";
      };
   };
 
-  home.file.".local/share/icons/hicolor/256x256/apps/ruko.png".source = ./ruko.png;
+  home.file.".local/share/icons/ruko.png".source = ./ruko.png;
   xdg.desktopEntries.discord-canary = {
-    name = "Not Discord";
-    exec = "discordcanary";
-    icon = "ruko";
+    name = "Discord Canary";
+    exec = "discordcanary --wayland-text-input-version=3";
+    icon = "${config.home.homeDirectory}/.local/share/icons/ruko.png";
   };
 
   # Let Home Manager install and manage itself.

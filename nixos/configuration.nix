@@ -31,14 +31,14 @@
       enable = true;
       settings = {
           default_session = {
-              command = ''${pkgs.greetd.tuigreet}/bin/tuigreet --cmd niri-session'';
+              command = ''${pkgs.tuigreet}/bin/tuigreet --cmd niri-session'';
               user = "greeter";
           };
       };
     };
     gnome.gnome-keyring.enable = true;
     gvfs.enable = true;
-    logind.lidSwitchExternalPower = "ignore";
+    logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
 
     mullvad-vpn = {
       enable = true;
@@ -72,7 +72,7 @@
           font="Iosevka:size=12";
         };
       };
-      theme = "catppuccin-mocha";
+      theme = "rose-pine-moon";
     };
 
     gnupg.agent = {
@@ -115,6 +115,7 @@
     blacklistedKernelModules = [ "hp_wmi" ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [ "transparent_hugepage=never" ]; # Recommended for the use with VMWare.
+    kernel.sysctl."kernel.sysrq" = 1; 
 
     # Bootloader.
     loader = {
@@ -124,9 +125,11 @@
       };
       efi.canTouchEfiVariables = true;
     };
+
+    plymouth.enable = true;
     extraModprobeConfig = ''
       options hid_apple fnmode=0 
-    ''; # Disable Fn Lock on boot (for external KB) + set up virtual camera.
+    ''; # Disable Fn Lock on boot (for external KB).
   };
   
   # Bluetooth turn-on.
@@ -150,9 +153,11 @@
       settings =  {
         General = {
           EnableNetworkConfiguration = true;
+          AddressRandomization = true;
         };
         Settings = {
           AutoConnect = true;
+          AlwaysRandomizeAddress = true;
         };
       };
     };
@@ -270,9 +275,6 @@
       };
     };
   };
-
-  # Enable SysRq.
-  boot.kernel.sysctl."kernel.sysrq" = 1; 
   
   system.stateVersion = "24.11";
   system.userActivationScripts.regenerateTofiCache = {

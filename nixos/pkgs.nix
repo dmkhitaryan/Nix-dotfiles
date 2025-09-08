@@ -23,32 +23,28 @@ in
       withVencord = true;
     })
     distrobox
-    evince
+    evince # Document viewer.
     file-roller
     foot
-    fuzzel
     gimp3
     git
     gparted
     gpu-screen-recorder-gtk
-    gnumake
     grim
     helvum
+    impala
     inputs.listentui.packages.${pkgs.system}.default
     inputs.zen-browser.packages."${system}".beta
-    insomnia
     jq
     kdePackages.kdenlive
     killall
-    loupe
+    loupe # Image viewer.
     libnotify
     lutris
     lxappearance
     nemo
     nix-prefetch-github
     nixpkgs-review
-    npins
-    #openutau
     packagedRStudio
     pavucontrol
     playerctl
@@ -82,7 +78,6 @@ in
     winetricks
     wineWow64Packages.waylandFull
     wl-clipboard
-    wl-gammarelay-rs
     xwayland-satellite
     youtube-music
     yt-dlp
