@@ -1,6 +1,6 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, zen, listentui, ... }:
 let
-  packagedRStudio = pkgs.rstudioWrapper.override{ 
+  packagedRStudio = pkgs.rstudioWrapper.override { 
     packages = with pkgs.rPackages; [ 
       ggplot2 
       dplyr 
@@ -33,8 +33,8 @@ in
     grim
     helvum
     impala
-    inputs.listentui.packages.${pkgs.system}.default
-    inputs.zen-browser.packages."${system}".beta
+    listentui
+    zen
     jq
     kdePackages.kdenlive
     killall
@@ -45,6 +45,8 @@ in
     nemo
     nix-prefetch-github
     nixpkgs-review
+    npins
+    openutau
     packagedRStudio
     pavucontrol
     playerctl

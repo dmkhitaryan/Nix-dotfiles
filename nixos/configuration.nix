@@ -1,12 +1,50 @@
-{lib, inputs, config, pkgs, callPackage, ... }:
+{lib, config, pkgs, callPackage, ... }:
+let
+  aagl = import (builtins.fetchTarball {
+   url = "https://github.com/ezKEa/aagl-gtk-on-nix/archive/main.tar.gz";
+   sha256 = "sha256:0yxafv3wv1izl1j3ip12pn3gmabwajk6jbawmh719q96zw7jawy8"; 
+  });
+
+  sources = import ../npins;
+
+  zen_browser_flake = builtins.getFlake sources.zen-browser-flake.url;
+  zen = zen_browser_flake.packages.${pkgs.system}.beta;
+
+  listentui_flake = builtins.getFlake sources.listentui.url;
+  listentui = listentui_flake.packages.${pkgs.system}.default;
+
+  nixos-hardware = import sources.nixos-hardware;
+  home-manager = import sources.home-manager {};
+  emacs-overlay = import sources.emacs-overlay;
+in
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ./pkgs.nix
-      ./misc.nix # Nix-specific configuration.
-#      ./mwc/mwc.nix # Currently borked on unstable branch due to updating scenefx: 0.2.1 -> 0.4.1
+  nixpkgs.pkgs = import sources.nixpkgs { config.allowUnfree = true; };
+  nixpkgs.overlays = [
+    emacs-overlay
+  ];
+
+  _module.args = {
+    inherit zen emacs-overlay listentui;
+  };
+
+  imports = [ 
+    aagl.module
+    (import "${sources.home-manager}/nixos")
+    (import "${sources.nixos-hardware}/lenovo/legion/16achg6/nvidia")
+    ./hardware-configuration.nix # Include the results of the hardware scan.
+    ./pkgs.nix
+    ./misc.nix # Nix-specific configuration.
+    #./mwc/mwc.nix # Currently borked on unstable branch due to updating scenefx: 0.2.1 -> 0.4.1
     ];
+
+  home-manager.useUserPackages = true;
+  home-manager.useGlobalPkgs = true;
+  #home-manager.extraSpecialArgs
+  home-manager.users.necoarc = { 
+    imports = [
+      ../home-manager/home.nix
+    ];
+  };
 
   virtualisation = {
   #  vmware = {
@@ -62,6 +100,7 @@
 
   # Programs-related configuration for NixOS.
   programs = {
+    anime-game-launcher.enable = true;
     dconf.enable = true;
     direnv.enable = true;
 
@@ -81,6 +120,7 @@
       pinentryPackage = pkgs.pinentry.curses;
     };
 
+    honkers-railway-launcher.enable = true;
     niri.enable = true;
     mtr.enable = true;
    # mwc.enable = true;
@@ -230,9 +270,6 @@
     packages = with pkgs; [
     ];
   };
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
 
   fonts = {
     packages = with pkgs; [

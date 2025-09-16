@@ -10,11 +10,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    aagl = {
-      url = "github:ezKEa/aagl-gtk-on-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     emacs-overlay = {
       url = "github:nix-community/emacs-overlay";
     };
@@ -22,10 +17,9 @@
     listentui.url = "github:dmkhitaryan/LISTEN.tui";
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.6.0";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    zen-browser.url = "github:0xc000022070/zen-browser-flake";
   };
 
-  outputs = { self, nixpkgs, home-manager, aagl, listentui, nix-flatpak, nixos-hardware, emacs-overlay, ... }@inputs: 
+  outputs = { self, nixpkgs, home-manager, listentui, nix-flatpak, nixos-hardware, emacs-overlay, ... }@inputs: 
     let
       enableHardware = true;
       hardwareModel = "lenovo-legion-16achg6-nvidia";
@@ -45,16 +39,7 @@
           }
 
           ./nixos/configuration.nix
-          
-          aagl.nixosModules.default
           nix-flatpak.nixosModules.nix-flatpak
-
-          {
-            nix.settings = aagl.nixConfig; 
-            programs.honkers-railway-launcher.enable = true;
-            programs.anime-game-launcher.enable = true;
-          }
-
           home-manager.nixosModules.home-manager
           {
             home-manager.useUserPackages = true;

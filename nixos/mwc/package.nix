@@ -35,15 +35,6 @@
     buildInputs = [ libdrm libGL libinput libxcb libxkbcommon pixman scenefx wayland wlroots_0_18 ];
 
     passthru.providedSessions = [ "mwc" ];
-    # Resolve the use of harcoded paths that are inaccessible in NixOS via
-    # extraciton of the actual directories built by the package on NixOS.
-
-    # Sets the default config file as ... the 'default'. 
-    # Otherwise, wouldn't let the launch proceed properly.
-    # postFixup = ''
-    #   wrapProgram $out/bin/mwc \
-    #     --set MWC_DEFAULT_CONFIG_PATH "$out/share/mwc/default.conf"
-    # '';
 
     meta = {
       homepage = "https://github.com/dqrk0jeste/mwc";

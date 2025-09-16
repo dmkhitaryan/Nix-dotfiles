@@ -1,4 +1,4 @@
-{ inputs, config, pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -77,7 +77,7 @@
   programs.bash = {
     enable = true;
     shellAliases = {
-      nrf = "sudo nixos-rebuild switch --flake /home/necoarc/dotfiles#necoarc";
+      nrf = "sudo nixos-rebuild switch -I nixos-config=/home/necoarc/dotfiles/nixos/configuration.nix";
       ncg = "sudo nix-collect-garbage";
       ncgd = "sudo nix-collect-garbage -d";
       sus = "systemctl suspend";
@@ -108,11 +108,11 @@
      };
   };
 
-  home.file.".local/share/icons/ruko.png".source = ./ruko.png;
+  # home.file.".local/share/icons/ruko.png".source = ./ruko.png;
   xdg.desktopEntries.discord-canary = {
     name = "Discord Canary";
     exec = "discordcanary --wayland-text-input-version=3";
-    icon = "${config.home.homeDirectory}/.local/share/icons/ruko.png";
+    # icon = "${config.home.homeDirectory}/.local/share/icons/ruko.png";
   };
 
   # Let Home Manager install and manage itself.

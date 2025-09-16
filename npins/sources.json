@@ -1,0 +1,83 @@
+{
+  "pins": {
+    "emacs-overlay": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "nix-community",
+        "repo": "emacs-overlay"
+      },
+      "branch": "master",
+      "submodules": false,
+      "revision": "99a77c3da5376924f367515fee48795b8ac2368e",
+      "url": "https://github.com/nix-community/emacs-overlay/archive/99a77c3da5376924f367515fee48795b8ac2368e.tar.gz",
+      "hash": "1cr19crxjggnyg9s14kl1f5nhpg9i6x1b1l3vajmv9spwyk4ch40"
+    },
+    "home-manager": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "nix-community",
+        "repo": "home-manager"
+      },
+      "branch": "master",
+      "submodules": false,
+      "revision": "5820376beb804de9acf07debaaff1ac84728b708",
+      "url": "https://github.com/nix-community/home-manager/archive/5820376beb804de9acf07debaaff1ac84728b708.tar.gz",
+      "hash": "0b2a2qjsim6lj9p10h54mv515qj5siq8c9ii1hipwd5pdyh5mv8p"
+    },
+    "listentui": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "dmkhitaryan",
+        "repo": "LISTEN.tui"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "b0ddaa5e140a9deb694b5f48172a8608cc9538f2",
+      "url": "https://github.com/dmkhitaryan/LISTEN.tui/archive/b0ddaa5e140a9deb694b5f48172a8608cc9538f2.tar.gz",
+      "hash": "1xdfj96f2rm87vba0ic6qky90sj7qmskjrww10cilzg77m8xz9sp"
+    },
+    "nixos-hardware": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "NixOS",
+        "repo": "nixos-hardware"
+      },
+      "branch": "master",
+      "submodules": false,
+      "revision": "67a709cfe5d0643dafd798b0b613ed579de8be05",
+      "url": "https://github.com/NixOS/nixos-hardware/archive/67a709cfe5d0643dafd798b0b613ed579de8be05.tar.gz",
+      "hash": "1qz8j83b1zw96x9afmzjmmxccc53fpbf3s1jgnxvmaf12c9h79y3"
+    },
+    "nixpkgs": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "NixOS",
+        "repo": "nixpkgs"
+      },
+      "branch": "nixos-unstable",
+      "submodules": false,
+      "revision": "c23193b943c6c689d70ee98ce3128239ed9e32d1",
+      "url": "https://github.com/NixOS/nixpkgs/archive/c23193b943c6c689d70ee98ce3128239ed9e32d1.tar.gz",
+      "hash": "0vgk8mrprrh6w7zw2id3hc858kqw5pwdc52ma2f95rz36gchxcc4"
+    },
+    "zen-browser-flake": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "0xc000022070",
+        "repo": "zen-browser-flake"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "7dcbd22ca3943e4cfb3122f96cf515f028b3236a",
+      "url": "https://github.com/0xc000022070/zen-browser-flake/archive/7dcbd22ca3943e4cfb3122f96cf515f028b3236a.tar.gz",
+      "hash": "0r9zfq63rhj5qa4xz01jc6961lzh9210338n4fnwwir1rsd7f1cj"
+    }
+  },
+  "version": 5
+}

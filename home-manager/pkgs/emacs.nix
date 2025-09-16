@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, emacs-overlay, ... }:
 {
   home.packages = with pkgs; [
     (
