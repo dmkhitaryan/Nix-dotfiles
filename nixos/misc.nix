@@ -1,4 +1,7 @@
 { config, lib, ... }:
+let
+  sources = import ../npins;
+in
 {
   nix = {
     channel.enable = false;
@@ -16,9 +19,12 @@
       persistent = true;
     };
 
+    nixPath = ["nixpkgs=flake:nixpkgs"];
+
     settings = {
       auto-optimise-store = true;
       experimental-features = ["nix-command" "flakes"];
+      
       #nix-path = lib.mkForce "nixpkgs=/etc/nix/inputs/nixpkgs";
       substituters = [ 
         "https://cuda-maintainers.cachix.org" 
@@ -35,6 +41,10 @@
         "prismlauncher.cachix.org-1:9/n/FGyABA2jLUVfY+DEp4hKds/rwO+SCOtbOkDzd+c=" ];
     };
     #registry.nixpkgs.flake = inputs.nixpkgs;
+    registry.nixpkgs.to = {
+      type = "path";
+      path = sources.nixpkgs;
+    };
   };
 
   environment = {
