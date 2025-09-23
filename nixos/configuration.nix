@@ -1,21 +1,17 @@
 {lib, config, pkgs, callPackage, ... }:
 let
-  aagl = import (builtins.fetchTarball {
-   url = "https://github.com/ezKEa/aagl-gtk-on-nix/archive/main.tar.gz";
-   sha256 = "sha256:0yxafv3wv1izl1j3ip12pn3gmabwajk6jbawmh719q96zw7jawy8"; 
-  });
-
   sources = import ../npins;
 
-  zen_browser_flake = builtins.getFlake sources.zen-browser-flake.url;
-  zen = zen_browser_flake.packages.${pkgs.system}.beta;
+  flake-compat = import sources.flake-compat;
 
-  listentui_flake = builtins.getFlake sources.listentui.url;
-  listentui = listentui_flake.packages.${pkgs.system}.default;
-
-  nixos-hardware = import sources.nixos-hardware;
-  home-manager = import sources.home-manager {};
+  aagl = import sources.aagl-gtk-on-nix.outPath;
+  zen = import sources.zen-browser-flake.outPath {
+    inherit pkgs;
+  };
   emacs-overlay = import sources.emacs-overlay;
+
+  listentui_flake = flake-compat.lib.fromFlake { src = sources.listentui; } { nixpkgs =  sources.nixpkgs; };
+  listentui = listentui_flake.packages.${pkgs.system}.default;
 in
 {
   nixpkgs.pkgs = import sources.nixpkgs { config.allowUnfree = true; };
@@ -44,17 +40,6 @@ in
     imports = [
       ../home-manager/home.nix
     ];
-  };
-
-  virtualisation = {
-  #  vmware = {
-  #   host.enable = true;
-  #    guest.enable = true;
-  #  };
-    podman = {
-      enable = true;
-      dockerCompat = true;
-    };
   };
 
   systemd.network.wait-online.enable = false;
@@ -121,6 +106,7 @@ in
     };
 
     honkers-railway-launcher.enable = true;
+    nh.enable = true;
     niri.enable = true;
     mtr.enable = true;
    # mwc.enable = true;

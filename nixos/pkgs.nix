@@ -33,13 +33,13 @@ in
     grim
     helvum
     impala
-    listentui
-    zen
+    zen.beta
     jq
     kdePackages.kdenlive
     killall
     loupe # Image viewer.
     libnotify
+    listentui
     lutris
     lxappearance
     nemo
@@ -74,6 +74,7 @@ in
     swaybg
     telegram-desktop
     thunderbird
+    tree
     vlc
     vscode
     wget

@@ -84,6 +84,8 @@
     };
   };
 
+  programs.floorp.enable = true;
+
   programs.tofi = {
     enable = true;
      settings = {

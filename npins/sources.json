@@ -1,5 +1,17 @@
 {
   "pins": {
+    "aagl-gtk-on-nix": {
+      "type": "Git",
+      "repository": {
+        "type": "Git",
+        "url": "https://github.com/ezKEa/aagl-gtk-on-nix"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "944f9903859ad16db762fbe573fb6f05f7367e16",
+      "url": null,
+      "hash": "1il086whzi088hgl8j7vzq4rr17lykl7a30iqxzij098jhwymq29"
+    },
     "emacs-overlay": {
       "type": "Git",
       "repository": {
@@ -9,9 +21,21 @@
       },
       "branch": "master",
       "submodules": false,
-      "revision": "99a77c3da5376924f367515fee48795b8ac2368e",
-      "url": "https://github.com/nix-community/emacs-overlay/archive/99a77c3da5376924f367515fee48795b8ac2368e.tar.gz",
-      "hash": "1cr19crxjggnyg9s14kl1f5nhpg9i6x1b1l3vajmv9spwyk4ch40"
+      "revision": "725cd7702e72d0abc79dc20b77b2d1357248fad1",
+      "url": "https://github.com/nix-community/emacs-overlay/archive/725cd7702e72d0abc79dc20b77b2d1357248fad1.tar.gz",
+      "hash": "1nsdj1izaikiqhkn2ijziyzxd8qz0msmvn04wzrc28dd71jrclaj"
+    },
+    "flake-compat": {
+      "type": "Git",
+      "repository": {
+        "type": "Git",
+        "url": "https://git.lix.systems/lix-project/flake-compat/"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "549f2762aebeff29a2e5ece7a7dc0f955281a1d1",
+      "url": null,
+      "hash": "0g4izwn5k7qpavlk3w41a92rhnp4plr928vmrhc75041vzm3vb1l"
     },
     "home-manager": {
       "type": "Git",
@@ -22,9 +46,9 @@
       },
       "branch": "master",
       "submodules": false,
-      "revision": "5820376beb804de9acf07debaaff1ac84728b708",
-      "url": "https://github.com/nix-community/home-manager/archive/5820376beb804de9acf07debaaff1ac84728b708.tar.gz",
-      "hash": "0b2a2qjsim6lj9p10h54mv515qj5siq8c9ii1hipwd5pdyh5mv8p"
+      "revision": "9a2dc0efbc569ce9352a6ffb8e8ec8dbc098e142",
+      "url": "https://github.com/nix-community/home-manager/archive/9a2dc0efbc569ce9352a6ffb8e8ec8dbc098e142.tar.gz",
+      "hash": "14xnr63ljq7ysas104vd46r0d1nwjwkjwgr0jfgdq876yzh79vx7"
     },
     "listentui": {
       "type": "Git",
@@ -53,17 +77,10 @@
       "hash": "1qz8j83b1zw96x9afmzjmmxccc53fpbf3s1jgnxvmaf12c9h79y3"
     },
     "nixpkgs": {
-      "type": "Git",
-      "repository": {
-        "type": "GitHub",
-        "owner": "NixOS",
-        "repo": "nixpkgs"
-      },
-      "branch": "nixos-unstable",
-      "submodules": false,
-      "revision": "c23193b943c6c689d70ee98ce3128239ed9e32d1",
-      "url": "https://github.com/NixOS/nixpkgs/archive/c23193b943c6c689d70ee98ce3128239ed9e32d1.tar.gz",
-      "hash": "0vgk8mrprrh6w7zw2id3hc858kqw5pwdc52ma2f95rz36gchxcc4"
+      "type": "Channel",
+      "name": "nixos-unstable",
+      "url": "https://releases.nixos.org/nixos/unstable/nixos-25.11pre864611.554be6495561/nixexprs.tar.xz",
+      "hash": "06mmd802ykccl0yfs3dpp7z419wfd3479k11kn4jpivsxa3drkgg"
     },
     "zen-browser-flake": {
       "type": "Git",
@@ -74,9 +91,9 @@
       },
       "branch": "main",
       "submodules": false,
-      "revision": "7dcbd22ca3943e4cfb3122f96cf515f028b3236a",
-      "url": "https://github.com/0xc000022070/zen-browser-flake/archive/7dcbd22ca3943e4cfb3122f96cf515f028b3236a.tar.gz",
-      "hash": "0r9zfq63rhj5qa4xz01jc6961lzh9210338n4fnwwir1rsd7f1cj"
+      "revision": "a3a511b4d7a2f1d729a10e97fd7cb038a41adbd4",
+      "url": "https://github.com/0xc000022070/zen-browser-flake/archive/a3a511b4d7a2f1d729a10e97fd7cb038a41adbd4.tar.gz",
+      "hash": "1xxiy31p3l8kvc8pqfr2k449k6689wzj7b3m2ljdwaj0nx9hgyd6"
     }
   },
   "version": 5
