@@ -10,13 +10,9 @@ let
 in
 {
   nixpkgs.pkgs = import sources.nixpkgs { config.allowUnfree = true; };
-  nixpkgs.overlays = [
-    emacs-overlay
-  ];
+  nixpkgs.overlays = [ emacs-overlay ];
 
-  _module.args = {
-    inherit zen emacs-overlay;
-  };
+  _module.args = { inherit zen emacs-overlay; };
 
   imports = [ 
     aagl.module
@@ -27,6 +23,11 @@ in
     ./misc.nix # Nix-specific configuration.
     #./mwc/mwc.nix # Currently borked on unstable branch due to updating scenefx: 0.2.1 -> 0.4.1
     ];
+  
+  virtualisation.podman = {
+    enable = true;
+    dockerCompat = true;
+  };
 
   home-manager.useUserPackages = true;
   home-manager.useGlobalPkgs = true;
@@ -108,11 +109,9 @@ in
 
     obs-studio = {
       enable = true;
-      package = (
-        pkgs.obs-studio.override {
+      package = (pkgs.obs-studio.override {
           cudaSupport = true;
-        }
-      );
+        });
       plugins = with pkgs.obs-studio-plugins; [
         wlrobs
         obs-vkcapture
@@ -125,13 +124,15 @@ in
       remotePlay.openFirewall = true;
       dedicatedServer.openFirewall = true;
       localNetworkGameTransfers.openFirewall = true;
-      extraCompatPackages = with pkgs; [
-        proton-ge-bin
-      ];
+      extraCompatPackages = [ pkgs.proton-ge-bin ];
     };
   };
 
-  security.polkit.enable = true;
+  security = {
+    polkit.enable = true;
+    rtkit.enable = true;
+  };
+
   boot = {
     blacklistedKernelModules = [ "hp_wmi" ];
     kernelPackages = pkgs.linuxPackages_latest;
@@ -207,7 +208,10 @@ in
       enable = true;
       type = "fcitx5";
       fcitx5 = {
-        addons = with pkgs; [ fcitx5-mozc fcitx5-gtk ];
+        addons = with pkgs; [ 
+          fcitx5-mozc 
+          fcitx5-gtk 
+        ];
         waylandFrontend = true;
         settings.inputMethod = {
           "Groups/0" = {
@@ -241,15 +245,12 @@ in
     ];
   };
 
-  security.rtkit.enable = true;
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.necoarc = {
     isNormalUser = true;
     description = "Neco-Arc";
     extraGroups = [ "wheel" ];
-    packages = with pkgs; [
-    ];
+    packages = with pkgs; [];
   };
 
   fonts = {
@@ -266,10 +267,6 @@ in
         monospace = ["Iosevka Extended" "Sarasa Mono"];
       };
     };
-  };
-
-  console = {
-    packages = with pkgs; [ terminus_font ];
   };
 
   xdg.portal = {
@@ -296,8 +293,7 @@ in
   
   system.stateVersion = "24.11";
   system.userActivationScripts.regenerateTofiCache = {
-    text = 
-    ''
+    text = ''
       tofi_cache="$HOME/.cache/tofi-drun"
       [[ -f "$tofi_cache" ]] && rm "$tofi_cache"
     '';
