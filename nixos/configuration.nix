@@ -2,16 +2,11 @@
 let
   sources = import ../npins;
 
-  flake-compat = import sources.flake-compat;
-
   aagl = import sources.aagl-gtk-on-nix.outPath;
   zen = import sources.zen-browser-flake.outPath {
     inherit pkgs;
   };
   emacs-overlay = import sources.emacs-overlay;
-
-  listentui_flake = flake-compat.lib.fromFlake { src = sources.listentui; } { nixpkgs =  sources.nixpkgs; };
-  listentui = listentui_flake.packages.${pkgs.system}.default;
 in
 {
   nixpkgs.pkgs = import sources.nixpkgs { config.allowUnfree = true; };
@@ -20,7 +15,7 @@ in
   ];
 
   _module.args = {
-    inherit zen emacs-overlay listentui;
+    inherit zen emacs-overlay;
   };
 
   imports = [ 

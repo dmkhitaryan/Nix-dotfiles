@@ -8,6 +8,17 @@ let
       jsonlite
       ]; 
     };
+  pythonSystem = pkgs.python312.withPackages (ps: with ps; [
+      jupyterlab
+      matplotlib
+      pandas
+      statsmodels
+      scikitlearn
+    ]);
+  patchedDiscord = pkgs.discord-canary.override {
+      withOpenASAR = true;
+      withVencord = true;
+    };
 in
 {
   # List packages installed in system profile.
@@ -16,12 +27,6 @@ in
     appimage-run
     btrfs-assistant
     btop
-    cudaPackages.cudatoolkit
-    cudaPackages.cudnn
-    (discord-canary.override {
-      withOpenASAR = true;
-      withVencord = true;
-    })
     distrobox
     evince # Document viewer.
     file-roller
@@ -33,39 +38,23 @@ in
     grim
     helvum
     impala
-    zen.beta
     jq
     kdePackages.kdenlive
     killall
     loupe # Image viewer.
     libnotify
-    listentui
     lutris
     lxappearance
     nemo
     nix-prefetch-github
-    nixpkgs-review
     npins
-    openutau
     packagedRStudio
+    patchedDiscord
     pavucontrol
     playerctl
-    (prismlauncher.override {
-      jdks = [
-        graalvm-ce
-        zulu
-        zulu17
-        zulu8
-      ];
-    })
+    prismlauncher
     protonup-qt
-    (python312.withPackages (ps: with ps; [
-      jupyterlab
-      matplotlib
-      pandas
-      statsmodels
-      scikitlearn
-    ]))
+    pythonSystem
     r2modman
     satty
     shared-mime-info
@@ -84,5 +73,6 @@ in
     xwayland-satellite
     youtube-music
     yt-dlp
+    zen.beta
   ];
 }
