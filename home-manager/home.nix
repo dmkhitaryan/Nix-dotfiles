@@ -7,6 +7,8 @@
     ./appearance/styles.nix
     ./appearance/waybar.nix
 
+    ./services/swayidle.nix
+    ./services/swaylock.nix
     ./services/systemd.nix
     ./services/mako.nix
     ./services/tofi.nix
@@ -34,7 +36,6 @@
   };
 
   programs.floorp.enable = true;
-
 
   # home.file.".local/share/icons/ruko.png".source = ./ruko.png;
   xdg.desktopEntries.discord-canary = {

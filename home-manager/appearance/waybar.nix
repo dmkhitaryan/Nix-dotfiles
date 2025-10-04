@@ -13,7 +13,7 @@
         position = "top";
         height = 30;
 
-        output = [ "*" ];
+        output = [ "eDP-1" ];
 
         modules-left = [ "niri/workspaces" "group/volume" ];
         modules-center = [ "niri/window" ];
@@ -170,8 +170,6 @@
           border-radius: 20px;
           padding: 0px 10px 0px 5px;
         }
-
-
     '';
   };
 }
