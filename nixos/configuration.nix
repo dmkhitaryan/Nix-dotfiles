@@ -12,6 +12,8 @@ in
   nixpkgs.pkgs = import sources.nixpkgs { config.allowUnfree = true; };
   nixpkgs.overlays = [ emacs-overlay ];
 
+  documentation.nixos.enable = false;
+
   _module.args = { inherit zen emacs-overlay; };
 
   imports = [ 
@@ -126,6 +128,12 @@ in
       localNetworkGameTransfers.openFirewall = true;
       extraCompatPackages = [ pkgs.proton-ge-bin ];
     };
+
+    zsh = {
+      enable = true;
+      enableBashCompletion = true;
+      histSize = 5000;
+    };
   };
 
   security = {
@@ -180,14 +188,14 @@ in
         };
         Settings = {
           AutoConnect = true;
-          AlwaysRandomizeAddress = true;
         };
       };
     };
   };
 
   # Set your time zone.
-  time.timeZone = "Europe/Amsterdam";
+  # time.timeZone = "Europe/Amsterdam";
+  time.timeZone = "Asia/Yerevan";
 
   # Select internationalisation properties.
   i18n = {
@@ -252,6 +260,7 @@ in
     description = "Neco-Arc";
     extraGroups = [ "wheel" ];
     packages = with pkgs; [];
+    shell = pkgs.zsh;
   };
 
   fonts = {

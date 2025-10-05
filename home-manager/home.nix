@@ -24,18 +24,30 @@
   home.file = { };
   home.sessionVariables = { };
 
-  programs.bash = {
-    enable = true;
-    shellAliases = {
-      nrf = "sudo nixos-rebuild switch -I nixos-config=${config.home.homeDirectory}/dotfiles/nixos/configuration.nix";
-      nhs = "nh os switch -f '<nixpkgs/nixos>' -- -I nixos-config=${config.home.homeDirectory}/dotfiles/nixos/configuration.nix";
-      ncg = "sudo nix-collect-garbage";
-      ncgd = "sudo nix-collect-garbage -d";
-      sus = "systemctl suspend";
+  programs = {
+    bash = {
+      enable = false;
+      shellAliases = {
+        nrf = "sudo nixos-rebuild switch -I nixos-config=${config.home.homeDirectory}/dotfiles/nixos/configuration.nix";
+        nhs = "nh os switch -f '<nixpkgs/nixos>' -- -I nixos-config=${config.home.homeDirectory}/dotfiles/nixos/configuration.nix";
+        ncg = "sudo nix-collect-garbage";
+        ncgd = "sudo nix-collect-garbage -d";
+        sus = "systemctl suspend";
+      };
     };
-  };
 
-  programs.floorp.enable = true;
+    zsh = {
+      enable = true;
+      shellAliases = {
+        nrf = "sudo nixos-rebuild switch -I nixos-config=${config.home.homeDirectory}/dotfiles/nixos/configuration.nix";
+        nhs = "nh os switch -f '<nixpkgs/nixos>' -- -I nixos-config=${config.home.homeDirectory}/dotfiles/nixos/configuration.nix";
+        ncg = "sudo nix-collect-garbage";
+        ncgd = "sudo nix-collect-garbage -d";
+        sus = "systemctl suspend";
+      };
+    };
+    floorp.enable = true;
+  };
 
   # home.file.".local/share/icons/ruko.png".source = ./ruko.png;
   xdg.desktopEntries.discord-canary = {

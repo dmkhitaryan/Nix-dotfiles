@@ -8,13 +8,6 @@ let
       jsonlite
       ]; 
     };
-  pythonSystem = pkgs.python312.withPackages (ps: with ps; [
-      jupyterlab
-      matplotlib
-      pandas
-      statsmodels
-      scikitlearn
-    ]);
   patchedDiscord = pkgs.discord-canary.override {
       withOpenASAR = true;
       withVencord = true;
@@ -54,7 +47,6 @@ in
     playerctl
     prismlauncher
     protonup-qt
-    pythonSystem
     r2modman
     satty
     shared-mime-info
